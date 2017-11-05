@@ -13,7 +13,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'uploadBalances'),
 
     /*
     |--------------------------------------------------------------------------
@@ -164,6 +164,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         LaravelDoctrine\ORM\DoctrineServiceProvider::class,
+        'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
 
         /*
          * Package Service Providers...
@@ -177,6 +178,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\CSVFileParserServiceProvider::class,
 
     ],
 
@@ -226,6 +228,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'CSVFileParser' => App\Providers\CSVFileParserServiceProvider::class,
+        'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder'
 
     ],
 

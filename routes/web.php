@@ -18,3 +18,11 @@ Route::get('/', function () {
 Route::get('/', function () {
     return view('uploadBalancesFile');
 });
+
+//Route::get('/', 'UploadController@upload');
+
+Route::post('/uploadNewBalances', function(){
+    return 'FileController@uploadNewBalancesFile';
+});
+
+Route::post('/uploadNewBalances',  'FileController@uploadNewBalancesFile');
