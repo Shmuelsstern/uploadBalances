@@ -164,7 +164,7 @@ return [
         Illuminate\Validation\ValidationServiceProvider::class,
         Illuminate\View\ViewServiceProvider::class,
         LaravelDoctrine\ORM\DoctrineServiceProvider::class,
-        'Kris\LaravelFormBuilder\FormBuilderServiceProvider',
+        Collective\Html\HtmlServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -229,7 +229,9 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'CSVFileParser' => App\Providers\CSVFileParserServiceProvider::class,
-        'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder'
+        'Form' => Collective\Html\FormFacade::class,
+        'Html' => Collective\Html\HtmlFacade::class,
+
 
     ],
 
