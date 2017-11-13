@@ -7,9 +7,9 @@
 <div class='container padding-top'>
     <div class='row'>
         <div class='col-xs-12'>
-        {!! Form::open(['url' => 'uploadNewBalances']); !!}
-        {!! Form::text('testfield'); !!}
+        {!! Form::open(['url' => 'uploadNewBalances', 'files' => true]); !!}
         Select the file with new balances(csv) <br><br>
+        {!! Form::file('newBalancesfile') !!}
         {!! Form::submit('upload'); !!}
         {!! Form::close() !!}
 
