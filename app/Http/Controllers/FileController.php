@@ -8,10 +8,9 @@ use Illuminate\Http\Request;
 
 class FileController extends Controller{
 
-    public function uploadNewBalancesFile(CSVFileParser $CSVFP, Request $request){
-        //$parsedFile = new ParsedFile($CSVFP->ParsedFile);
-        $CSVFP->setParsedFile($request->file('newBalancesfile'));
-        session(['rawUploadedNewBalances'=> $CSVFP->getParsedFile()]);
-        dd(session('rawUploadedNewBalances'));
+    public function parseFileIntoArray(CSVFileParser $CSVFP, Request $request){ 
+        $parsedFile=$CSVFP->getParsedFile();
+        session(['rawUploadedNewBalances'=> $parsedFile]);
+        return view('setUploadedNewBalancesColumns',['uploadedFile'=>$parsedFile]);
     }
 };

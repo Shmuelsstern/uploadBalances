@@ -179,7 +179,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\CSVFileParserServiceProvider::class,
-
+        App\Providers\SourceFileServiceProvider::class,
     ],
 
     /*
@@ -229,7 +229,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'CSVFileParser' => App\Providers\CSVFileParserServiceProvider::class,
-        'FormBuilder' => 'Kris\LaravelFormBuilder\Facades\FormBuilder'
+        'SourceFile' => App\Providers\SourceFileServiceProvider::class
 
     ],
 

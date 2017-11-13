@@ -4,24 +4,25 @@ namespace App\src\Services;
 
 
 use Illuminate\Support\Facades\Storage;
+use App\src\Objects\SourceFile;
 use App\src\Objects\ParsedFile;
 
 class CSVFileParser{
 
-    private $parsedfile;
+    private $parsedFile;
     //private $expectedColumns;
 
-    public function __construct(){
-        //$this->setParsedfile();
+    public function __construct(SourceFile $file){
+        $this->setParsedFile($file->getFile());
         //$this->setExpectedColumns($expectedColumns);
     }
 
-    public function getParsedfile(){
-		return $this->parsedfile;
+    public function getParsedFile(){
+		return $this->parsedFile;
 	}
 
-	public function setParsedfile($uploadedfile){
-		$handle= fopen($uploadedfile,'r');
+	public function setParsedFile($uploadedfile){
+        $handle= fopen($uploadedfile,'r');
         $fileInfo=[];
         while(($data=fgetcsv($handle))!==false){
             $fileInfo[]=$data;

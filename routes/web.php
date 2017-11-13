@@ -21,8 +21,7 @@ Route::get('/', function () {
 
 //Route::get('/', 'UploadController@upload');
 
-Route::post('/uploadNewBalances', function(){
-    return 'FileController@uploadNewBalancesFile';
-});
+Route::post('/uploadNewBalances',  'FileController@parseFileIntoArray');
 
-Route::post('/uploadNewBalances',  'FileController@uploadNewBalancesFile');
+// for testing only because the file is not uploading from the post form
+Route::get('/uploadNewBalances',  'FileController@parseFileIntoArray');
