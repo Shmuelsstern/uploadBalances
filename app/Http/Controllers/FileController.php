@@ -11,6 +11,6 @@ class FileController extends Controller{
     public function parseFileIntoArray(CSVFileParser $CSVFP, Request $request){ 
         $parsedFile=$CSVFP->getParsedFile();
         session(['rawUploadedNewBalances'=> $parsedFile]);
-        return view('setUploadedNewBalancesColumns',['uploadedFile'=>$parsedFile]);
+        return view('chooseUploadedNewBalancesColumns',['uploadedFile'=>$parsedFile]);
     }
 };

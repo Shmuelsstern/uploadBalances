@@ -17,7 +17,7 @@ class SourceFile{
 
     public function setFile($requestFile){
         if (isset($requestFile)&&!empty($requestFile)){
-            $this->file=$request->file();
+            $this->file=end($requestFile);
         }else{
             $this->file='testclaims.csv';
         }

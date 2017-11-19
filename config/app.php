@@ -232,6 +232,7 @@ return [
         'SourceFile' => App\Providers\SourceFileServiceProvider::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
+        'ParsedFile' => App\src\Objects\ParsedFile::class
 
 
     ],
