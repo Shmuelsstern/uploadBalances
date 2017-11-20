@@ -19,9 +19,6 @@ Route::get('/', function () {
     return view('uploadBalancesFile');
 });
 
-//Route::get('/', 'UploadController@upload');
-
 Route::post('/uploadNewBalances',  'FileController@parseFileIntoArray');
 
-// for testing only because the file is not uploading from the post form
-//Route::get('/uploadNewBalances',  'FileController@parseFileIntoArray');
+Route::post('/setColumns', 'NewBalancesController@setColumns');
