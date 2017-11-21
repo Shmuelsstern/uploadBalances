@@ -69,5 +69,5 @@ $count=0;
 @endsection
 
 @section('scripts')
-    <script src='js/chooseUploadedNewBalancesColumns.8.js?';></script>
+    <script src='js/chooseUploadedNewBalancesColumns.9.js?';></script>
 @endsection
