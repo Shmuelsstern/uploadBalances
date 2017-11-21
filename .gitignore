@@ -16,3 +16,4 @@ tests/TestCase.php
 tests/CreatesApplication.php
 public/testclaims.csv
 .env.example
+resources/views/testView.blade.php
