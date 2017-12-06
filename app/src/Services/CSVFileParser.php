@@ -10,33 +10,27 @@ use App\src\Objects\ParsedFile;
 class CSVFileParser{
 
     private $parsedFile;
-    //private $expectedColumns;
 
     public function __construct(SourceFile $file){
         $this->setParsedFile($file->getFile());
-        //$this->setExpectedColumns($expectedColumns);
     }
 
     public function getParsedFile(){
 		return $this->parsedFile;
 	}
 
-	public function setParsedFile($uploadedfile){
+	public function setParsedFile($uploadedfile,$hasHeaderRow=true){
         $handle= fopen($uploadedfile,'r');
-        $fileInfo=[];
+        $headerRow=null;
+        if($hasHeaderRow){
+            $headerRow = fgetcsv($handle);
+        }
+        $fileInfo=[];        
         while(($data=fgetcsv($handle))!==false){
             $fileInfo[]=$data;
         }
         fclose($handle);
-        $this->parsedFile = new ParsedFile($fileInfo);
+        $this->parsedFile = new ParsedFile($fileInfo, $headerRow);
 	}
-
-	/*public function getExpectedColumns(){
-		return $this->expectedColumns;
-	}
-
-	public function setExpectedColumns($expectedColumns){
-		$this->expectedColumns = $expectedColumns;
-    }*/
    
 };

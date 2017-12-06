@@ -22,3 +22,7 @@ Route::get('/', function () {
 Route::post('/uploadNewBalances',  'FileController@parseFileIntoArray');
 
 Route::post('/setColumns', 'NewBalancesController@setColumns');
+
+Route::get('/setNewBalances','NewBalancesController@setNewBalances');
+
+Route::get('/matchFacilities','FacilitiesController@matchFacilities');

@@ -10,55 +10,49 @@
             <table class="table">
             {!! Form::open(['url' => '/setColumns']) !!} 
 @php 
-$count=0; 
+$count=0;
+$columnsAmount= count($uploadedFile->getParsedFileArray()[0]); 
 @endphp  
+                <thead>
+                    <tr>    
+                        <th>{!! Form::submit('confirmed columns',['id' => 'submitButton']) !!}</th>
+                    </tr>
+                    <tr>
+@for($i=0;$i<$columnsAmount;$i++)
+                        <th>
+{!! Form::select('column'.$i , ParsedFile::$COLUMNS_TO_CHOOSE['newBalances'], null, ['placeholder' => 'do not import','data-column'=> $i]) !!}
+                        </th>
+@endfor
+                    </tr>
+                    <tr id='DOSrow' >
+@for($i=0;$i<$columnsAmount;$i++)
+                        <th>
+{!! Form::date('DOS'.$i, null,['style'=>'visibility:hidden','id'=>'DOS'.$i]) !!}
+                        </th>
+@endfor                    
+                    </tr>
+@if($headerRow)
+                    <tr>
+    @foreach($headerRow as $data)
+                    <th>
+                    {{ $data }}
+                    </th>
+    @endforeach
+                    </tr>
+@endif
+                </thead>
 
 @foreach($uploadedFile->getParsedFileArray() as $parsedBalance)
-    @if(($count++<5)||($count>($loop->count - 5)))
-        @if($loop->first)
-                    <thead>
-                        <tr>    
-                            <th>{!! Form::submit('confirmed columns',['id' => 'submitButton']) !!}</th>
-                            <th>There are {{$loop->count}} rows</th>
-                        </tr>
-                        <tr>
-            @for($i=0;$i<count($parsedBalance);$i++)
-                            <th>
-            {!! Form::select('column'.$i , ParsedFile::$COLUMNS_TO_CHOOSE['newBalances'], null, ['placeholder' => 'do not import','data-column'=> $i]) !!}
-                            </th>
-            @endfor
-                        </tr>
-                        <tr id='DOSrow' >
-            @for($i=0;$i<count($parsedBalance);$i++)
-                            <th>
-            {!! Form::date('DOS'.$i, null,['style'=>'visibility:hidden','id'=>'DOS'.$i]) !!}
-                            </th>
-            @endfor                    
-                        </tr>
-        @elseif($loop->iteration==2)  
+    @if(($count++<5)||($count>($loop->count - 5))) 
                     <tbody>
-        @endif                
                         <tr>
         @foreach($parsedBalance as $data)
-            @if($loop->parent->first)
-                        <th>
-            @else  
                         <td>
-            @endif
             {{ $data }}
-            @if($loop->parent->first)
-                        </th>
-            @else  
                         </td>
-            @endif
-
         @endforeach
                         </tr>
-        @if($loop->first)
-                </thead>
-        @elseif($loop->last)  
-                </tbody>
-        @endif
+                    </tbody>
     @endif
 
 @endforeach
@@ -69,5 +63,5 @@ $count=0;
 @endsection
 
 @section('scripts')
-    <script src='js/chooseUploadedNewBalancesColumns.9.js?';></script>
+    <script src='js/chooseUploadedNewBalancesColumns.23.js?';></script>
 @endsection
