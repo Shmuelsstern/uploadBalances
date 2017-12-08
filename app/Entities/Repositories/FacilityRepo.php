@@ -20,7 +20,7 @@ Class FacilityRepo{
                 $facility->$setParam((string)$value);
             }
         }
-        $this->facilityCollection->push($facility);
+        $this->facilityCollection->put($facility->getShortName(),$facility);
     }
 
     public function getFacilityCollection(){

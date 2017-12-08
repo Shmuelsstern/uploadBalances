@@ -9,5 +9,11 @@ class NewBalancesController extends Controller{
     public function setColumns(Request $request){
         $parsedFile = session('rawUploadedNewBalances');
         $parsedFile->setMappedColumns($request->all());
-    }   
+        return redirect('/matchFacilities');
+    } 
+    
+    public function setNewBalances(){
+        $facility = new \App\Entities\Facility(['uploadedName'=>'testing']);
+        dd( $facility->getUploadedName());
+    }
 }

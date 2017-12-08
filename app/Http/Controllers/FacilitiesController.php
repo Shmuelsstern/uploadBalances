@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\src\Services\QuickbaseQuerier;
+use App\src\Services\Matcher;
 use App\Entities\Repositories\FacilityRepo;
 
 class FacilitiesController extends Controller{
@@ -17,6 +18,7 @@ class FacilitiesController extends Controller{
         foreach($response->record as $record){
             $facilityRepo->pushFromXML($record);
         }
-        dd($facilityRepo->getFacilityCollection(),$uniqueValues);
+        $facilityMatcher = new Matcher($facilityRepo->getFacilityCollection(),$uniqueValues);
+        dd($facilityRepo->getFacilityCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
     } 
 }
