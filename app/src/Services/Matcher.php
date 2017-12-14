@@ -10,7 +10,7 @@ class Matcher{
     private $toMatchArray;
     private $multipleMatcheds=[];
 
-    public function __construct($referenceCollection, $toMatchArray,$matchExact=false){
+    public function __construct($referenceCollection, $toMatchArray, $matchExact=false){
         $this->matchExact=$matchExact;
         $this->referenceCollection=$referenceCollection;
         if(!$matchExact){
@@ -21,14 +21,15 @@ class Matcher{
 
     public function setReferenceArray(){
         foreach($this->referenceCollection->all() as $key=>$value){
-            $newKey=strtolower(str_replace(' ','',$key));
+            $newKey=(str_replace(' ','',$key));
             $this->referenceArray[$newKey]=$value->getRecordId();
         }
     }
 
     public function match(){
         foreach($this->toMatchArray as $key=>$value){
-            if($this->toMatchArray[$key]=$this->referenceCollection->get($key)['recordId']){
+            if($this->referenceCollection->get($key)){
+                $this->toMatchArray[$key]=$this->referenceCollection->get($key)->getRecordId();
                 continue;
             }
             if($this->matchExact){
@@ -42,18 +43,18 @@ class Matcher{
     public function getFuzzyMatch($toMatchKey){
         $matched=[];
         foreach($this->referenceArray as $referenceKey=>$value){
-            $strippedKey = strtolower(str_replace(' ','',$toMatchKey));
-            if(strpos($referenceKey,$strippedKey)||strpos($strippedKey,$referenceKey)){
-                $matched+=[$toMatchKey=>$value];
+            $strippedKey = (str_replace(' ','',$toMatchKey));
+            if((stripos($referenceKey,$strippedKey)!==false)||(stripos($strippedKey,$referenceKey)!==false)){     
+                $matched[]+=$value;
             }
         }
         switch(true){
             case count($matched)==0:
                 return 'unmatched';
             case count($matched)==1:
-                return $matched[$toMatchKey];
+                return $matched[0];
             case count($matched)>1:
-                $this->multipleMatcheds+=$matched;
+                $this->multipleMatcheds[$toMatchKey]=$matched;
                 return 'multiple matched';
         }
     }
@@ -65,4 +66,17 @@ class Matcher{
     public function getMultipleMatcheds(){
         return $this->multipleMatcheds;
     }
+
+    public function getMultipleMatched($toMatchKey){
+        $newarray=[];
+        foreach($this->multipleMatcheds[$toMatchKey] as $value){
+            $newarray[$value]= array_search($value,$this->referenceArray);
+        }
+        return $newarray;
+    }
+
+    public function getReferenceCollection(){
+        return $this->referenceCollection;
+    }
+
 }

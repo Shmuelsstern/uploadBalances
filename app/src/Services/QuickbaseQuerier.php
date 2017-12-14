@@ -8,7 +8,7 @@ class QuickbaseQuerier{
     private $userToken;
     private $request;
     //private $a='API_DoQuery';
-    private $databases=['facility'=> 'bk2ymn44w'];
+    private $databases=[];
     private $query;
     private $queryFid=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45']];
     private $queryOperator=['contains'=>'CT','does not contain'=>'XCT','equals'=>'EX', 'not equal to'=>'XEX'];
@@ -19,12 +19,12 @@ class QuickbaseQuerier{
 
 
     public function __construct(){
-        $this->appToken = env('QB_APPTOKEN'); 
+        $this->appToken = env('QB_TEST_APPTOKEN'); 
         $this->userToken = env('QB_USERTOKEN');
+        $this->databases+= ['facility'=> env('QB_TEST_FACILITYTABLE')];
     }
 
-    public function setRequest($subject,$queryField,$operator,$queryValue, $returnFields){
-        $this->setQuery($subject,$queryField,$operator,$queryValue);
+    public function setRequest($subject, $returnFields){
         $requestString = 'https://scs.quickbase.com/db/';
         $requestString.= $this->databases[$subject];
         $requestString.= '?a=API_DoQuery';

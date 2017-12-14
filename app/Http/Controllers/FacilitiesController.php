@@ -12,13 +12,17 @@ class FacilitiesController extends Controller{
         $subject = 'facility';
         $parsedFile=session('rawUploadedNewBalances');
         $uniqueValues=array_values(array_unique(array_column($parsedFile->getParsedFileArray(), $parsedFile->getMappedColumns()[$subject])));
-        $QBQ->setRequest($subject,'GROUP','equals','Symphony', ['record ID#','SHORT NAME']);
-        $response =$QBQ->query();
-        $facilityRepo= new FacilityRepo();
+        $QBQ->setQuery($subject,'GROUP','equals','Symphony');
+        $QBQ->setRequest($subject, ['record ID#','SHORT NAME']);
+        $response = $QBQ->query();
+        $repo = new FacilityRepo();
         foreach($response->record as $record){
-            $facilityRepo->pushFromXML($record);
+            $repo->pushFromXML($record);
         }
-        $facilityMatcher = new Matcher($facilityRepo->getFacilityCollection(),$uniqueValues);
-        dd($facilityRepo->getFacilityCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
+        $facilityMatcher = new Matcher($repo->getFacilityCollection(),$uniqueValues);
+        $facilityMatcher->match();
+        //dd($facilityMatcher->getReferenceCollection(),$facilityMatcher->getToMatchArray(),$facilityMatcher->getMultipleMatcheds());
+        //confirm//exportQB unmatched//download new//match//
+        return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
     } 
 }
