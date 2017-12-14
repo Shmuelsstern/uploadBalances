@@ -19,6 +19,7 @@ class FacilitiesController extends Controller{
             $facilityRepo->pushFromXML($record);
         }
         $facilityMatcher = new Matcher($facilityRepo,$uniqueValues);
-        dd($facilityRepo->getCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
+        //dd($facilityRepo->getCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
+        return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
     } 
 }
