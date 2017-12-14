@@ -18,7 +18,7 @@ class FacilitiesController extends Controller{
         foreach($response->record as $record){
             $facilityRepo->pushFromXML($record);
         }
-        $facilityMatcher = new Matcher($facilityRepo->getFacilityCollection(),$uniqueValues);
-        dd($facilityRepo->getFacilityCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
+        $facilityMatcher = new Matcher($facilityRepo,$uniqueValues);
+        dd($facilityRepo->getCollection(),$uniqueValues,$facilityMatcher->getToMatchArray());
     } 
 }

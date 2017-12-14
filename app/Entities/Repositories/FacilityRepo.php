@@ -6,10 +6,12 @@ use App\Entities\Facility;
 
 Class FacilityRepo{
 
-    private $facilityCollection;
+    private $collection;
+    private $neutralKeysArray;
 
     public function __construct(){
-        $this->facilityCollection = new Collection();
+        $this->collection = new Collection();
+        $this->neutralKeysCollection = new Collection();
     }
 
     public function pushFromXml($xmlFacility){
@@ -20,10 +22,23 @@ Class FacilityRepo{
                 $facility->$setParam((string)$value);
             }
         }
-        $this->facilityCollection->put($facility->getShortName(),$facility);
+        $this->setCollection($facility);
+        $this->setNeutralKeysCollection($facility);
     }
 
-    public function getFacilityCollection(){
-        return $this->facilityCollection;
+    public function getCollection(){
+        return $this->collection;
+    }
+
+    public function setCollection($facility){
+        $this->collection->put($facility->getShortName(),$facility);
+        $this->collection->put($facility->getrecordId(),$facility);
+    }
+
+    public function setNeutralKeysCollection($facility){
+        $this->neutralKeysCollection->put(strtolower(str_replace(' ','',$facility->getShortName())),$facility);
+    }
+    public function getNeutralKeysCollection(){
+        return $this->neutralKeysCollection;
     }
 }
