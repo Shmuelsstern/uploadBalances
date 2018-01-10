@@ -12,10 +12,6 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/', function () {
     return view('uploadBalancesFile');
 });
 
@@ -26,3 +22,5 @@ Route::post('/setColumns', 'NewBalancesController@setColumns');
 Route::get('/setNewBalances','NewBalancesController@setNewBalances');
 
 Route::get('/matchFacilities','FacilitiesController@matchFacilities');
+
+Route::post('/updateNewFacilities','FacilitiesController@updateNewFacilities');

@@ -19,11 +19,11 @@ class Facility{
         }
 	}
 
-    public function getrecordId(){
+    public function getRecordId(){
 		return $this->recordId;
 	}
 
-	public function setrecordId($recordId){
+	public function setRecordId($recordId){
 		$this->recordId = $recordId;
 	}
 

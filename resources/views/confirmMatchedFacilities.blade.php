@@ -4,9 +4,10 @@
 
 @section('content')
 
-{!! Form::open(['url' => '/updateNewFacilities']) !!}
     <div class="row">   
         <div class="xs-col-12">
+{!! Form::open(['url' => '/updateNewFacilities']) !!}
+{!! Form::submit('Confirm') !!}
             <table class="table">
                 <thead>
                     <th>Uploaded Facility
@@ -18,17 +19,37 @@
 @foreach($facilityMatcher->getToMatchArray() as $key=>$matchedFacility)
                 <tr>
                     <td>{{$key}}</td>
-    @if($matchedFacility=='unmatched')
-                    <td>unmatched</td>
-    @elseif($matchedFacility=='multiple matched')   
-                    <td>
-                    {!! Form::select($key,$facilityMatcher->getMultipleMatched($key)) !!}
+                    <td>                   
+    @if($matchedFacility['facility']->getShortName()=='unmatched')  
+        {!! Form::select($matchedFacility['strippedName'],$facilityMatcher->getRepo()->getCollection()->mapWithKeys(function($item){
+        return [$item->getRecordId()=>$item->getShortName()];
+    })->all()) !!} 
+    @elseif($matchedFacility['facility']->getShortName()=='multiple matched')
+                        <select class="bg-danger" name={{$matchedFacility['strippedName']}} >  
+        @foreach($facilityMatcher->getMultipleMatchedsArray($key)  as $id=>$facilityName)
+                            <option value={{$id}} >
+                            {{$facilityName}}
+                            </option>
+        @endforeach 
+        @foreach($facilityMatcher->getRepo()->getArrayForMultipleMatched($facilityMatcher->getMultipleMatchedsArray($key))  as $id=> $facilityName)
+                            <option value={{$id}}>
+                            {{$facilityName}}
+                            </option>
+        @endforeach   
+                       </select>
+    @else
+                        <select name={{$matchedFacility['strippedName']}}>
+                            <option value={!!$matchedFacility['facility']->getRecordId()!!}>
+                            {!!$matchedFacility['facility']->getShortName()!!}
+                            </option>
+        @foreach($facilityMatcher->getRepo()->getArrayForMatched($matchedFacility['facility'])  as $id=> $facilityName)
+                            <option value={{$id}}>
+                            {{$facilityName}}
+                            </option>
+        @endforeach            
+                        </select>
+    @endif          
                     </td>
-    @else             
-                    <td>{{$facilityMatcher->getReferenceCollection()->first(function($value,$key)use($matchedFacility){
-                        return $value->getRecordId()==$matchedFacility;
-                    })->getRecordId()}}</td>
-    @endif
                 </tr>
 @endforeach                
                 </tbody>

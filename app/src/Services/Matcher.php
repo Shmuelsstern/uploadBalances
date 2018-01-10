@@ -2,60 +2,59 @@
 
 namespace App\src\Services;
 
+use App\Entities\Facility;
+
 class Matcher{
 
     private $matchExact;
-    private $referenceCollection;
-    private $referenceArray;
+    private $repo;
     private $toMatchArray;
     private $multipleMatcheds=[];
 
-    public function __construct($referenceCollection, $toMatchArray, $matchExact=false){
+    public function __construct($repo, $toMatchArray,$matchExact=false){
         $this->matchExact=$matchExact;
-        $this->referenceCollection=$referenceCollection;
-        if(!$matchExact){
-            $this->setReferenceArray();
-        }
+        $this->repo=$repo;
         $this->toMatchArray=array_flip($toMatchArray);
     }
 
-    public function setReferenceArray(){
-        foreach($this->referenceCollection->all() as $key=>$value){
-            $newKey=(str_replace(' ','',$key));
-            $this->referenceArray[$newKey]=$value->getRecordId();
-        }
-    }
-
     public function match(){
-        foreach($this->toMatchArray as $key=>$value){
-            if($this->referenceCollection->get($key)){
-                $this->toMatchArray[$key]=$this->referenceCollection->get($key)->getRecordId();
+        foreach($this->toMatchArray as $toMatch=>$v){
+            $strippedName=strtolower(str_replace(' ','',$toMatch));
+            $exactMatch=$this->repo->getNeutralKeysCollection()->get($strippedName);
+            if($exactMatch){
+                $this->toMatchArray[$toMatch]=['facility'=>$exactMatch,'strippedName'=>$strippedName];
                 continue;
             }
             if($this->matchExact){
-                $this->toMatchArray[$key]='unmatched';
+                $unmatchedFacility=new Facility();
+                $unmatchedFacility->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                $this->toMatchArray[$toMatch]=['facility'=>$unmatchedFacility,'strippedName'=>$strippedName];
                 continue;
             }
-            $this->toMatchArray[$key]=$this->getFuzzyMatch($key);
+            $this->toMatchArray[$toMatch]=['facility'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
         }
     }
 
-    public function getFuzzyMatch($toMatchKey){
+    public function getFuzzyMatch($toMatch){
         $matched=[];
-        foreach($this->referenceArray as $referenceKey=>$value){
-            $strippedKey = (str_replace(' ','',$toMatchKey));
-            if((stripos($referenceKey,$strippedKey)!==false)||(stripos($strippedKey,$referenceKey)!==false)){     
-                $matched[]+=$value;
+        foreach($this->repo->getNeutralKeysCollection() as $referenceToMatch=>$facility){
+            $strippedKey = strtolower(str_replace(' ','',$toMatch));
+            if(strpos($referenceToMatch,$strippedKey)!==false||strpos($strippedKey,$referenceToMatch)!==false){
+                $matched[]=$facility;
             }
         }
         switch(true){
             case count($matched)==0:
-                return 'unmatched';
+                $unmatchedFacility=new Facility();
+                $unmatchedFacility->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                return $unmatchedFacility;
             case count($matched)==1:
                 return $matched[0];
             case count($matched)>1:
-                $this->multipleMatcheds[$toMatchKey]=$matched;
-                return 'multiple matched';
+                $this->multipleMatcheds[$toMatch]=$matched;
+                $multipleMatchedFacility=new Facility();
+                $multipleMatchedFacility->setParams(['recordId'=>'multiple matched','shortName'=>'multiple matched']);
+                return $multipleMatchedFacility;
         }
     }
 
@@ -67,16 +66,15 @@ class Matcher{
         return $this->multipleMatcheds;
     }
 
-    public function getMultipleMatched($toMatchKey){
-        $newarray=[];
-        foreach($this->multipleMatcheds[$toMatchKey] as $value){
-            $newarray[$value]= array_search($value,$this->referenceArray);
+    public function getMultipleMatchedsArray($key){
+        $newArray = [];
+        foreach($this->multipleMatcheds[$key] as $facility){
+            $newArray[$facility->getRecordId()]=$facility->getShortName();
         }
-        return $newarray;
+        return $newArray;
     }
-
-    public function getReferenceCollection(){
-        return $this->referenceCollection;
+    public function getRepo()
+    {
+       return $this->repo;
     }
-
 }
