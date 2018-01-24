@@ -2,49 +2,36 @@
 
 namespace App\src\Services;
 
-class QuickbaseQuerier{
+class QuickbaseQuerier extends QuickbaseRequester{
 
-    private $appToken; 
-    private $userToken;
     private $request;
-    //private $a='API_DoQuery';
     private $databases=[];
     private $query;
     private $queryFid=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45']];
     private $queryOperator=['contains'=>'CT','does not contain'=>'XCT','equals'=>'EX', 'not equal to'=>'XEX'];
     private $queryValue;
     private $includeRids;
-    private $clist=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45']];//fields to be returned 
+    private $CList;
+    private $clistMapping=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45']];//fields to be returned 
     private $slist;//fields used for sorting
 
 
-    public function __construct(){
-        $this->appToken = env('QB_TEST_APPTOKEN'); 
-        $this->userToken = env('QB_USERTOKEN');
-        $this->databases+= ['facility'=> env('QB_TEST_FACILITYTABLE')];
+    public function __construct($subject,$queryField,$operator,$queryValue,$returnFields){
+        parent::__construct($subject,'API_DoQuery');
+        $this->setQuery($queryField,$operator,$queryValue);
+        $this->setCList($returnFields);
+        $this->setURLRequest();
     }
 
-    public function setRequest($subject, $returnFields){
-        $requestString = 'https://scs.quickbase.com/db/';
-        $requestString.= $this->databases[$subject];
-        $requestString.= '?a=API_DoQuery';
-        $requestString.= '&apptoken='.$this->appToken.'&usertoken='.$this->userToken;
-        $requestString.= '&query='.$this->getQuery();
-        $delimiter="&clist=";
-        foreach($returnFields as $rf){
-            $requestString.=$delimiter.$this->clist[$subject][$rf];
-            $delimiter='.';
-        }
-        $this->request = $requestString; 
+    public function getSpecificURLRequest(){
+        $requestString= '&query='.$this->getQuery();
+        $requestString.=$this->getCList();
+        return $requestString;
     }
 
-    public function getRequest(){
-        return $this->request;
-    }
-
-    public function setQuery($subject,$queryField,$operator,$queryValue){
+    public function setQuery($queryField,$operator,$queryValue){
         $queryString ='{';
-        $queryString.= $this->queryFid[$subject][$queryField];
+        $queryString.= $this->queryFid[$this->subject][$queryField];
         $queryString.= '.';
         $queryString.= $this->queryOperator[$operator];
         $queryString.= '.';
@@ -53,11 +40,25 @@ class QuickbaseQuerier{
         $this->query = $queryString;
     }
 
+    public function setCList($returnFields){
+        $CList='';
+        $delimiter="&clist=";
+        foreach($returnFields as $rf){
+            $CList.=$delimiter.$this->clistMapping[$this->subject][$rf];
+            $delimiter='.';
+        }
+        $this->CList=$CList;
+    }
+
+    public function getCList(){
+        return $this->CList;
+    }
+
     public function getQuery(){
         return $this->query;
     }
 
-    public function query(){
-        return simplexml_load_file($this->getRequest());
+    public  function getSpecificXMLRequest(){
     }
+
 }

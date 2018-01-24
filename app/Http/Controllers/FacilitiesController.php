@@ -11,16 +11,16 @@ use App\Entities\Facility;
 
 class FacilitiesController extends Controller{
 
-    public function matchFacilities(QuickbaseQuerier $QBQ){
+    public function matchFacilities(){
         $subject='facility';
-        $uniqueValues=$this->getUniqueValuesOfColumn($subject);
-        $QBQ->setQuery($subject,'GROUP','equals','Symphony');
-        $QBQ->setRequest($subject, ['record ID#','SHORT NAME']);
-        $response = $QBQ->query();
+        $returnFields=['record ID#','SHORT NAME'];
+        $QBQ= new QuickbaseQuerier($subject,'GROUP','equals','Symphony',$returnFields);
+        $response = $QBQ->requestURL();
         $repo = new FacilityRepo();
         foreach($response->record as $record){
             $repo->pushFromXML($record);
         }
+        $uniqueValues=$this->getUniqueValuesOfColumn($subject);
         $facilityMatcher = new Matcher($repo,$uniqueValues);
         $facilityMatcher->match();
         session(['facilityRepo'=>$repo]);
@@ -40,7 +40,6 @@ class FacilitiesController extends Controller{
             }
         }
         $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
-        $importCSVRequestor->setXMLRequest();   
         $newRecordIds = $importCSVRequestor->requestXML()->rids;
         $i=0;
         foreach($uniqueValues as $facilityName){

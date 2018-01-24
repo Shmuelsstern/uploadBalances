@@ -13,6 +13,7 @@ class API_ImportFromCSVRequester extends QuickbaseRequester{
         parent::__construct($subject,'API_ImportFromCSV');
         $this->setCSVFileString($CSVData);
         $this->setClist($clist);
+        $this->setXMLRequest();
     }
 
     public function setCSVFileString($CSVData){
@@ -42,7 +43,7 @@ class API_ImportFromCSVRequester extends QuickbaseRequester{
         return $this->clist;
     }
 
-    public function getSpecificRequest(){
+    public function getSpecificXMLRequest(){
         $specificRequest = '  <records_csv>
                                 <![CDATA[';
         $specificRequest.= $this->CSVFileString;
@@ -50,6 +51,10 @@ class API_ImportFromCSVRequester extends QuickbaseRequester{
                               </records_csv>';
         $specificRequest.='  <clist>'.$this->clist.'</clist>';
         return $specificRequest;
+    }
+
+    public function getSpecificURLRequest(){
+        //unsble to be done to the best of my knowledge
     }
 
 }

@@ -12,20 +12,22 @@ abstract class QuickbaseRequester{
     private $request;
     private $method = 'POST';
     private $header;
+    protected $subject;
 
     public function __construct($subject,$action){
         $this->appToken = env('QB_TEST_APPTOKEN'); 
         $this->userToken = env('QB_USERTOKEN');
-        $this->url = 'https://scs.quickbase.com/db/';
+        $this->url = env('QB_APP_URL');
         $this->database = env('QB_TEST_'.strtoupper($subject).'TABLE');
         $this->action = $action;
+        $this->subject=$subject;
     }
 
     public function setXMLRequest(){    
         $postString='<qdbapi>';
         $postString.='  <usertoken>'.$this->userToken.'</usertoken>';
         $postString.='  <apptoken>'.$this->appToken.'</apptoken>';
-        $postString.= $this->getSpecificRequest();   
+        $postString.= $this->getSpecificXMLRequest();   
         $postString.='</qdbapi>'; 
         $this->request = $postString;
     }
@@ -46,6 +48,21 @@ abstract class QuickbaseRequester{
         return $xml_result;
     }
 
-    public abstract function getSpecificRequest();
+    public abstract function getSpecificXMLRequest();
+
+    public function setURLRequest(){
+        $requestString = $this->url;
+        $requestString.= $this->database;
+        $requestString.= '?a='.$this->action;
+        $requestString.= '&apptoken='.$this->appToken.'&usertoken='.$this->userToken;
+        $requestString.= $this->getSpecificURLRequest();
+        $this->request=$requestString;
+    }
+    
+    public function requestURL(){
+        return simplexml_load_file($this->request);
+    }
+
+    public abstract function getSpecificURLRequest();
 
 }
