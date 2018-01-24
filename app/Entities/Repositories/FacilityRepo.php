@@ -33,12 +33,12 @@ Class FacilityRepo{
         return $this->collection;
     }
 
-    public function setCollection($facility){
+    public function setCollection(&$facility){
         $this->collection->put($facility->getShortName(),$facility);
         //$this->collection->put($facility->getRecordId(),$facility);
     }
 
-    public function setNeutralKeysCollection($facility){
+    public function setNeutralKeysCollection(&$facility){
         $this->neutralKeysCollection->put(strtolower(str_replace(' ','',$facility->getShortName())),$facility);
     }
     public function getNeutralKeysCollection(){
@@ -65,4 +65,28 @@ Class FacilityRepo{
         }
         return $newArray;
     }
+
+    public function findBy($property, $value){
+        if($property=='shortName'){
+            return $this->collection->get($value);
+        }else{
+            $getProperty = 'get'.ucfirst($property);
+            foreach($this->collection as $facility){
+                if($facility->$getProperty()== $value){
+                    return $facility;
+                }
+            } 
+        }
+    }
+
+    public function getMatchedFacilities(){
+        $matchedFacilities=[];
+        foreach($this->collection as $facility){
+            if($facility->getUploadedName()!==null){
+                $matchedFacilities[$facility->getUploadedName()]=$facility;
+            }
+        }
+        return $matchedFacilities;
+    }
+
 }
