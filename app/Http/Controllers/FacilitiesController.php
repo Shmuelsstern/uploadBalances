@@ -20,8 +20,8 @@ class FacilitiesController extends Controller{
         foreach($response->record as $record){
             $repo->pushFromXML($record);
         }
-        $uniqueValues=$this->getUniqueValuesOfColumn($subject);
-        $facilityMatcher = new Matcher($repo,$uniqueValues);
+        $faciliteisToMatch=$this->getUniqueValuesOfColumn($subject);
+        $facilityMatcher = new Matcher($repo,$faciliteisToMatch);
         $facilityMatcher->match();
         session(['facilityRepo'=>$repo]);
         return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
@@ -51,13 +51,14 @@ class FacilitiesController extends Controller{
                 $i++;
             }
         }
-        dd($repo->getMatchedFacilities());
-        /*dd($uniqueValues,$request->all(),$newFacilities,session('rawUploadedNewBalances'));*/
+        $rawUploadedNewBalances=session('rawUploadedNewBalances');
+        //dd($rawUploadedNewBalances,$repo->getMatchedFacilities());
+        return redirect('/matchResidents');
     }
 
     public function getUniqueValuesOfColumn($subject){
         $parsedFile=session('rawUploadedNewBalances');
-        $uniqueValues=array_values(array_unique(array_column($parsedFile->getParsedFileArray(), $parsedFile->getMappedColumns()[$subject])));
+        $uniqueValues=array_values(array_unique(array_column($parsedFile->getIdentifiedColumnsArray(), $subject)));
         return $uniqueValues;
     }
 }

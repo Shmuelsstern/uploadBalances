@@ -16,8 +16,8 @@
                     </th>
                 </thead>
                 <tbody>
-@foreach($facilityMatcher->getToMatchArray() as $key=>$matchedFacility)
-                <tr>
+ @foreach($facilityMatcher->getToMatchArray() as $key=>$matchedFacility)
+               <tr>
                     <td>{{$key}}</td>
                     <td>                   
     @if($matchedFacility['facility']->getShortName()=='unmatched')  

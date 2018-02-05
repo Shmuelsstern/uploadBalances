@@ -9,6 +9,7 @@ class NewBalancesController extends Controller{
     public function setColumns(Request $request){
         $parsedFile = session('rawUploadedNewBalances');
         $parsedFile->setMappedColumns($request->all());
+        $parsedFile->setIdentifiedColumnsArray();
         return redirect('/matchFacilities');
     } 
     

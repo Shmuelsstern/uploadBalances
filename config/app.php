@@ -181,6 +181,7 @@ return [
         App\Providers\CSVFileParserServiceProvider::class,
         App\Providers\QuickbaseQuerierServiceProvider::class,
         App\Providers\SourceFileServiceProvider::class,
+        App\Providers\ResidentRepoServiceProvider::class,
     ],
 
     /*
@@ -233,7 +234,8 @@ return [
         'SourceFile' => App\Providers\SourceFileServiceProvider::class,
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
-        'ParsedFile' => App\src\Objects\ParsedFile::class
+        'ParsedFile' => App\src\Objects\ParsedFile::class,
+        'ResidentRepo' => pp\Providers\ResidentRepoServiceProvider::class
 
 
     ],
