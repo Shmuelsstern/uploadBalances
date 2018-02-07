@@ -5,11 +5,12 @@ namespace App\src\Objects;//unsure about the naming convention
 class ParsedFile{
 
 	private $parsedFileArray;//array array
+	private $identifiedColumnsArray;//array array
 	private $headerRow; 
 	private $mappedColumns;
 	private $hasSeparateDOSColumn;
 	private $balanceDOSArray;
-	static $COLUMNS_TO_CHOOSE = ['newBalances'=>['balance'=>'balance','facility'=>'facility','patient_ID'=>'patient ID','first_name'=>'first name','last_name'=>'last name','DOB'=>'DOB','social_security'=>'social security #','Medicaid'=>'Medicaid #','Medicare'=>'Medicare #','payer_type'=>'payer type','insurance'=>'insurance','policy'=>'policy #','DOS'=>'DOS','new_balance'=>'new balance','comments'=>'comments']];
+	static $COLUMNS_TO_CHOOSE = ['newBalances'=>['balance'=>'balance','facility'=>'facility','patientId'=>'patient ID','firstName'=>'first name','lastName'=>'last name','DOB'=>'DOB','socialSecurityNum'=>'social security #','medicaidNum'=>'Medicaid #','medicareNum'=>'Medicare #','payerType'=>'payer type','insurance'=>'insurance','policyNum'=>'policy #','DOS'=>'DOS','newBalance'=>'new balance','comments'=>'comments']];
 
     public function __construct($parsedFileArray, $headerRow){
 		$this->setParsedFileArray($parsedFileArray);
@@ -54,5 +55,21 @@ class ParsedFile{
 			}
 		}
 		$this->mappedColumns = $mappedColumns;
+	}
+
+	public function setIdentifiedColumnsArray(){
+		$identifiedColumnsArray=[];
+		foreach($this->parsedFileArray as $row){
+			$balanceInfo=[];
+			foreach($this->mappedColumns as $columnName=>$columnNumber){
+				$balanceInfo[$columnName]=$row[$columnNumber];
+			}
+			$identifiedColumnsArray[]=$balanceInfo;
+		}
+		$this->identifiedColumnsArray=$identifiedColumnsArray;
+	}
+
+	public function getIdentifiedColumnsArray(){
+		return $this->identifiedColumnsArray;
 	}
 };

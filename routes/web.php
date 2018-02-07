@@ -24,3 +24,5 @@ Route::get('/setNewBalances','NewBalancesController@setNewBalances');
 Route::get('/matchFacilities','FacilitiesController@matchFacilities');
 
 Route::post('/updateNewFacilities','FacilitiesController@updateNewFacilities');
+
+Route::get('/matchResidents','ResidentsController@matchResidents');
