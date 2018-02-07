@@ -7,54 +7,56 @@ use App\Entities\Facility;
 class Matcher{
 
     private $matchExact;
-    private $repo;
+    private $referenceRepo;
     private $toMatchArray;
     private $multipleMatcheds=[];
+    private $objectType;
 
-    public function __construct($repo, $toMatchArray,$matchExact=false){
+    public function __construct($referenceRepo, $toMatchArray,$matchExact=false,$objectType='facility'){
+        $this->objectType = $objectType;
         $this->matchExact=$matchExact;
-        $this->repo=$repo;
+        $this->referenceRepo=$referenceRepo;
         $this->toMatchArray=array_flip($toMatchArray);
     }
 
     public function match(){
         foreach($this->toMatchArray as $toMatch=>$v){
             $strippedName=strtolower(str_replace(' ','',$toMatch));
-            $exactMatch=$this->repo->getNeutralKeysCollection()->get($strippedName);
+            $exactMatch=$this->referenceRepo->getNeutralKeysCollection()->get($strippedName);
             if($exactMatch){
-                $this->toMatchArray[$toMatch]=['facility'=>$exactMatch,'strippedName'=>$strippedName];
+                $this->toMatchArray[$toMatch]=['object'=>$exactMatch,'strippedName'=>$strippedName];
                 continue;
             }
             if($this->matchExact){
-                $unmatchedFacility=new Facility();
-                $unmatchedFacility->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
-                $this->toMatchArray[$toMatch]=['facility'=>$unmatchedFacility,'strippedName'=>$strippedName];
+                $unmatchedObject=$this->createObjectType();
+                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                $this->toMatchArray[$toMatch]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
                 continue;
             }
-            $this->toMatchArray[$toMatch]=['facility'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
+            $this->toMatchArray[$toMatch]=['object'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
         }
     }
 
     public function getFuzzyMatch($toMatch){
         $matched=[];
-        foreach($this->repo->getNeutralKeysCollection() as $referenceToMatch=>$facility){
+        foreach($this->referenceRepo->getNeutralKeysCollection() as $referenceToMatch=>$object){
             $strippedKey = strtolower(str_replace(' ','',$toMatch));
             if(strpos($referenceToMatch,$strippedKey)!==false||strpos($strippedKey,$referenceToMatch)!==false){
-                $matched[]=$facility;
+                $matched[]=$object;
             }
         }
         switch(true){
             case count($matched)==0:
-                $unmatchedFacility=new Facility();
-                $unmatchedFacility->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
-                return $unmatchedFacility;
+                $unmatchedObject=$this->createObjectType();
+                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                return $unmatchedObject;
             case count($matched)==1:
                 return $matched[0];
             case count($matched)>1:
                 $this->multipleMatcheds[$toMatch]=$matched;
-                $multipleMatchedFacility=new Facility();
-                $multipleMatchedFacility->setParams(['recordId'=>'multiple matched','shortName'=>'multiple matched']);
-                return $multipleMatchedFacility;
+                $multipleMatchedObject=$this->createObjectType();
+                $multipleMatchedObject->setParams(['recordId'=>'multiple matched','shortName'=>'multiple matched']);
+                return $multipleMatchedObject;
         }
     }
 
@@ -68,13 +70,21 @@ class Matcher{
 
     public function getMultipleMatchedsArray($key){
         $newArray = [];
-        foreach($this->multipleMatcheds[$key] as $facility){
-            $newArray[$facility->getRecordId()]=$facility->getShortName();
+        foreach($this->multipleMatcheds[$key] as $object){
+            $newArray[$object->getRecordId()]=$object->getShortName();
         }
         return $newArray;
     }
-    public function getRepo()
+    public function getReferenceRepo()
     {
-       return $this->repo;
+       return $this->referenceRepo;
+    }
+
+    public function getObjectType(){
+        return $this->objectType;
+    }
+
+    public function createObjectType(){
+        return new ucfirst($this->objectType());
     }
 }
