@@ -12,7 +12,7 @@ class Matcher{
     private $multipleMatcheds=[];
     private $objectType;
 
-    public function __construct($referenceRepo, $toMatchArray,$matchExact=false,$objectType='facility'){
+    public function __construct($objectType,$referenceRepo, $toMatchArray,$matchExact=false){
         $this->objectType = $objectType;
         $this->matchExact=$matchExact;
         $this->referenceRepo=$referenceRepo;

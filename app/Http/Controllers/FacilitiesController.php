@@ -21,7 +21,7 @@ class FacilitiesController extends Controller{
             $repo->pushFromXML($record);
         }
         $faciliteisToMatch=$this->getUniqueValuesOfColumn($subject);
-        $facilityMatcher = new Matcher($repo,$faciliteisToMatch);
+        $facilityMatcher = new Matcher($subject,$repo,$faciliteisToMatch);
         $facilityMatcher->match();
         session(['facilityRepo'=>$repo]);
         return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
