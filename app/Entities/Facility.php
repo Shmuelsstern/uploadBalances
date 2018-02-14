@@ -6,10 +6,11 @@ class Facility{
 
     private $recordId;
     private $shortName;
-    private $uploadedName;
+	private $uploadedFacilityName;
+	private $relatedGroup;
 
     public function __construct(){
-
+		$this->setRelatedGroup();
 	}
 	
 	public function setParams(Array $params){
@@ -35,11 +36,25 @@ class Facility{
 		$this->shortName = $shortName;
 	}
 
-	public function getUploadedName(){
+	public function getUploadedFacilityName(){
 		return $this->uploadedName;
 	}
 
-	public function setUploadedName($uploadedName){
+	public function setUploadedFacilityName($uploadedName){
 		$this->uploadedName = $uploadedName;
+	}
+
+	public function setRelatedGroup(){
+		$relatedGroup= session('relatedGroup');
+		if($relatedGroup){
+			$this->relatedGroup=$relatedGroup;
+		}else{
+			$this->relatedGroup='nogroup';
+		}
+
+	}
+
+	public function getRelatedGroup(){
+		return $this->relatedGroup;
 	}
 }

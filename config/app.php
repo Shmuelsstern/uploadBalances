@@ -182,6 +182,7 @@ return [
         App\Providers\QuickbaseQuerierServiceProvider::class,
         App\Providers\SourceFileServiceProvider::class,
         App\Providers\ResidentRepoServiceProvider::class,
+        App\Providers\NewBalanceRepoServiceProvider::class,
     ],
 
     /*
@@ -235,8 +236,8 @@ return [
         'Form' => Collective\Html\FormFacade::class,
         'Html' => Collective\Html\HtmlFacade::class,
         'ParsedFile' => App\src\Objects\ParsedFile::class,
-        'ResidentRepo' => pp\Providers\ResidentRepoServiceProvider::class
-
+        'ResidentRepo' => App\Providers\ResidentRepoServiceProvider::class,
+        'NewBalanceRepo' => App\Providers\NewBalanceRepoServiceProvider::class
 
     ],
 

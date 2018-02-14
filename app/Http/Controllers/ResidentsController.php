@@ -16,12 +16,12 @@ class ResidentsController extends Controller{
         $response = $QBQ->requestURL();
         $QBrepo = new ResidentRepo();
         foreach($response->record as $record){
-            $repo->pushFromXML($record);
+            $QBrepo->pushFromXML($record);
         }
         $parsedFile = session('rawUploadedNewBalances');
         $facilityRepo = session('facilityRepo');
         foreach($parsedFile->getIdentifiedColumnsArray() as $newBalanceRow){
-            $newBalanceRow['relatedFacility'] = $facilityRepo->getMatchedFacilities()[$newBalanceRow['facility']]->getShortName();
+            $newBalanceRow['relatedFacility'] = $facilityRepo->getMatchedFacilities()[$newBalanceRow['facility']]->getRecordId();
             $residentsToMatchRepo->add($newBalanceRow);
         }
         dd($QBrepo,$residentsToMatchRepo);

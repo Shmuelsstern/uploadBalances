@@ -10,7 +10,8 @@ class ParsedFile{
 	private $mappedColumns;
 	private $hasSeparateDOSColumn;
 	private $balanceDOSArray;
-	static $COLUMNS_TO_CHOOSE = ['newBalances'=>['balance'=>'balance','facility'=>'facility','patientId'=>'patient ID','firstName'=>'first name','lastName'=>'last name','DOB'=>'DOB','socialSecurityNum'=>'social security #','medicaidNum'=>'Medicaid #','medicareNum'=>'Medicare #','payerType'=>'payer type','insurance'=>'insurance','policyNum'=>'policy #','DOS'=>'DOS','newBalance'=>'new balance','comments'=>'comments']];
+	private $balanceArray;
+	static $COLUMNS_TO_CHOOSE = ['newBalances'=>['balance'=>'balance','uploadedFacilityName'=>'facility','patientId'=>'patient ID','firstName'=>'first name','lastName'=>'last name','DOB'=>'DOB','socialSecurityNum'=>'social security #','medicaidNum'=>'Medicaid #','medicareNum'=>'Medicare #','payerType'=>'payer type','insurance'=>'insurance','policyNum'=>'policy #','DOS'=>'DOS','newBalance'=>'new balance','comments'=>'comments']];
 
     public function __construct($parsedFileArray, $headerRow){
 		$this->setParsedFileArray($parsedFileArray);
@@ -33,6 +34,10 @@ class ParsedFile{
 		$this->parsedFileArray = $parsedFileArray;
 	}
 
+	public function hasSeparateDOSColumn(){
+		return $this->hasSeparateDOSColumn;
+	}
+
 	public function getMappedColumns(){
 		return $this->mappedColumns;
 	}
@@ -44,13 +49,15 @@ class ParsedFile{
 		}else{
 			$this->hasSeparateDOSColumn = false;
 		}
+		$balanceIndex=0;
 		for($columnIndex=0;$columnIndex<count($this->parsedFileArray[0]);$columnIndex++){
-			$currentData=$POSTData['column'.$columnIndex];
-			if(isset($currentData)&&!empty($currentData)){
-				if($currentData=='balance' && !$this->hasSeparateDOSColumn){
-					$this->balanceDOSArray[$columnIndex]=$POSTData['DOS'.$columnIndex];				
+			$currentColumnName=$POSTData['column'.$columnIndex];
+			if(isset($currentColumnName)&&!empty($currentColumnName)){
+				if($currentColumnName=='balance' && !$this->hasSeparateDOSColumn){
+					$this->balanceDOSArray[balanceIndex]=$POSTData['DOS'.$columnIndex];
+					$this->balanceArray[balanceIndex]=$columnIndex;				
 				}else{
-					$mappedColumns[$currentData]=$columnIndex;
+					$mappedColumns[$currentColumnName]=$columnIndex;
 				}
 			}
 		}
@@ -71,5 +78,13 @@ class ParsedFile{
 
 	public function getIdentifiedColumnsArray(){
 		return $this->identifiedColumnsArray;
+	}
+
+	public function getBalanceDOSArray(){
+		return $this->balanceDOSArray;
+	}
+
+	public function getBalanceArray(){
+		return $this->balanceArray;
 	}
 };

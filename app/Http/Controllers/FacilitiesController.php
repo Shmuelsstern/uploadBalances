@@ -11,19 +11,21 @@ use App\Entities\Facility;
 
 class FacilitiesController extends Controller{
 
+    private $group=['Symphony'=>1];
+
     public function matchFacilities(){
         $subject='facility';
-        $returnFields=['record ID#','SHORT NAME'];
+        $returnFields=['record ID#','SHORT NAME','Related GROUP'];
         $QBQ= new QuickbaseQuerier($subject,'GROUP','equals','Symphony',$returnFields);
-        $response = $QBQ->requestURL();
-        $repo = new FacilityRepo();
-        foreach($response->record as $record){
-            $repo->pushFromXML($record);
+        $XMLresponse = $QBQ->requestURL();
+        $QBrepo = new FacilityRepo();
+        foreach($XMLresponse->record as $record){
+            $QBrepo->pushFromXML($record);
         }
-        $faciliteisToMatch=$this->getUniqueValuesOfColumn($subject);
-        $facilityMatcher = new Matcher($subject,$repo,$faciliteisToMatch);
+        $facilitiesToMatch=$this->getUniqueValuesOfColumn($subject);
+        $facilityMatcher = new Matcher($subject,$QBrepo,$facilitiesToMatch);
         $facilityMatcher->match();
-        session(['facilityRepo'=>$repo]);
+        session(['facilityRepo'=>$QBrepo]);
         return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
     } 
 
@@ -34,9 +36,9 @@ class FacilitiesController extends Controller{
         foreach($uniqueValues as $facilityName){
             $stripped=strtolower(str_replace(' ','',$facilityName));
             if($request->$stripped=="unmatched"){
-                $newFacilities[]=$facilityName;
+                $newFacilities[]=[$facilityName,$this->group['Symphony']];
             }else{
-                $repo->findBy('recordId',$request->$stripped)->setParams(['uploadedName'=>$facilityName,'recordId'=>$request->$stripped]);
+                $repo->findBy('recordId',$request->$stripped)->setParams(['uploadedFacilityName'=>$facilityName,'recordId'=>$request->$stripped]);
             }
         }
         $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
@@ -46,19 +48,19 @@ class FacilitiesController extends Controller{
             $stripped=strtolower(str_replace(' ','',$facilityName));
             if($request->$stripped=="unmatched"){
                 $currentFacility = new Facility();
-                $currentFacility->setParams(['recordId'=>$newRecordIds[$i],'uploadedName'=>$facilityName,'shortName'=>$facilityName]);
+                $currentFacility->setParams(['recordId'=>$newRecordIds[$i],'uploadedFacilityName'=>$facilityName,'shortName'=>$facilityName]);
                 $repo->getCollection()->put($facilityName,$currentFacility);
                 $i++;
             }
         }
         $rawUploadedNewBalances=session('rawUploadedNewBalances');
-        //dd($rawUploadedNewBalances,$repo->getMatchedFacilities());
         return redirect('/matchResidents');
     }
 
     public function getUniqueValuesOfColumn($subject){
+        $fieldName='uploaded'.ucfirst($subject).'Name';
         $parsedFile=session('rawUploadedNewBalances');
-        $uniqueValues=array_values(array_unique(array_column($parsedFile->getIdentifiedColumnsArray(), $subject)));
+        $uniqueValues=array_values(array_unique(array_column($parsedFile->getIdentifiedColumnsArray(), $fieldName)));
         return $uniqueValues;
     }
 }

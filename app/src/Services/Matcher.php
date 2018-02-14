@@ -11,6 +11,7 @@ class Matcher{
     private $toMatchArray;
     private $multipleMatcheds=[];
     private $objectType;
+    private $matcheds=[];
 
     public function __construct($objectType,$referenceRepo, $toMatchArray,$matchExact=false){
         $this->objectType = $objectType;
@@ -24,16 +25,16 @@ class Matcher{
             $strippedName=strtolower(str_replace(' ','',$toMatch));
             $exactMatch=$this->referenceRepo->getNeutralKeysCollection()->get($strippedName);
             if($exactMatch){
-                $this->toMatchArray[$toMatch]=['object'=>$exactMatch,'strippedName'=>$strippedName];
+                $this->matcheds[$toMatch]=['object'=>$exactMatch,'strippedName'=>$strippedName];
                 continue;
             }
             if($this->matchExact){
                 $unmatchedObject=$this->createObjectType();
                 $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
-                $this->toMatchArray[$toMatch]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
+                $this->matcheds[$toMatch]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
                 continue;
             }
-            $this->toMatchArray[$toMatch]=['object'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
+            $this->matcheds[$toMatch]=['object'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
         }
     }
 
@@ -85,6 +86,15 @@ class Matcher{
     }
 
     public function createObjectType(){
-        return new ucfirst($this->objectType());
+        $class="App\\Entities\\".ucfirst($this->getObjectType());
+        return new $class();
+    }
+
+    public function getMatcheds(){
+        return $this->matcheds;
+    }
+
+    public function setMatcheds($matcheds){
+        $this->matcheds=$matcheds;
     }
 }

@@ -17,7 +17,7 @@ class ResidentRepo {
 
     public function pushFromXml($xmlResident){
         $resident = new Resident();
-        foreach($xmlFacility as $key => $value){
+        foreach($xmlResident as $key => $value){
             $setParam='set'.ucfirst(camel_case($key));
             if(method_exists($resident,$setParam)){
                 $resident->$setParam((string)$value);

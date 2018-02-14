@@ -4,6 +4,7 @@ namespace App\Entities;
 
 class Resident{
 
+	private $recordId;
     private $relatedFacility;
     private $patientId;
     private $firstName;
@@ -19,7 +20,14 @@ class Resident{
             $this->$setter($param);
         }
 	}
+	
+	public function getRecordId(){
+		return $this->recordId;
+	}
 
+	public function setRecordId($recordId){
+		$this->recordId = $recordId;
+	}
     public function getRelatedFacility(){
 		return $this->relatedFacility;
 	}

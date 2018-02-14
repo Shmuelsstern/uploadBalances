@@ -16,12 +16,12 @@
                     </th>
                 </thead>
                 <tbody>
- @foreach($facilityMatcher->getToMatchArray() as $key=>$matchedFacility)
+ @foreach($facilityMatcher->getMatcheds() as $key=>$matchedFacility)
                <tr>
                     <td>{{$key}}</td>
                     <td>                   
     @if($matchedFacility['object']->getShortName()=='unmatched')  
-        {!! Form::select($matchedFacility['strippedName'],$facilityMatcher->getRepo()->getCollection()->mapWithKeys(function($item){
+        {!! Form::select($matchedFacility['strippedName'],$facilityMatcher->getReferenceRepo()->getCollection()->mapWithKeys(function($item){
         return [$item->getRecordId()=>$item->getShortName()];
     })->all()) !!} 
     @elseif($matchedFacility['object']->getShortName()=='multiple matched')
@@ -31,7 +31,7 @@
                             {{$facilityName}}
                             </option>
         @endforeach 
-        @foreach($facilityMatcher->getRepo()->getArrayForMultipleMatched($facilityMatcher->getMultipleMatchedsArray($key))  as $id=> $facilityName)
+        @foreach($facilityMatcher->getReferenceRepo()->getArrayForMultipleMatched($facilityMatcher->getMultipleMatchedsArray($key))  as $id=> $facilityName)
                             <option value={{$id}}>
                             {{$facilityName}}
                             </option>
