@@ -21,16 +21,16 @@ Class NewBalanceRepo{
     public function parsedFileToObject($parsedFile){
         if($parsedFile->hasSeparateDOSColumn()){
             foreach($parsedFile->getIdentifiedColumnsArray() as $newBalanceInfo){
-                $balanceWODollarSign = str_replace('$','',$newBalanceInfo['balance']);
+                $balanceWODollarSign = str_replace(['(','$',',',' ',')'],['-',''],$newBalanceInfo['balance']); 
                 if(is_numeric($balanceWODollarSign) && $balanceWODollarSign<>0){
-                    $newBalance= new NewBalance($newBalanceInfo);
+                    $newBalance= new NewBalance($this,$newBalanceInfo);
                     $this->add($newBalance);
                 }
             }
         }else{
             foreach($parsedFile->getIdentifiedColumnsArray() as $newBalanceInfo){
                 foreach($parsedFile->getBalanceDOSArray() as $index=>$DOS){
-                    $balanceWODollarSign = str_replace('$','',$newBalanceInfo['balance'.$index]);
+                    $balanceWODollarSign = str_replace(['(','$',',',' ',')'],['-',''],$newBalanceInfo['balance'.$index]);
                     if(isset($balanceWODollarSign) && (is_numeric($balanceWODollarSign) && $balanceWODollarSign<>0)){
                         $tmpNewBalanceInfo=[];
                         $tmpNewBalanceInfo['DOS']=$DOS;
@@ -42,7 +42,7 @@ Class NewBalanceRepo{
                             }
                         }
                     }
-                    $newBalance= new NewBalance($tmpNewBalanceInfo);
+                    $newBalance= new NewBalance($this,$tmpNewBalanceInfo);
                     $this->add($newBalance); 
                 }
             }
@@ -50,11 +50,19 @@ Class NewBalanceRepo{
     }
 
     public function add($newBalance){
-        $uniquePayersIdentifier=$newBalanceCollection->getPayer()->getPayerType();
+        $uniqueFacilityIdentifier=$newBalance->getUploadedFacilityName();
+        if(!$this->uniqueFacilitiesCollection->has($uniqueFacilityIdentifier)){
+            $this->uniqueFacilitiesCollection->put($uniqueFacilityIdentifier,$newBalance->getFacility());
+        }
+        $uniqueResidentIdentifier=$newBalance->getUploadedFacilityName().$newBalance->getPatientId();
+        if(!$this->uniqueResidentsCollection->has($uniqueResidentIdentifier)){
+            $this->uniqueResidentsCollection->put($uniqueResidentIdentifier,$newBalance->getResident());
+        }       
+        $uniquePayersIdentifier=$newBalance->getPayerType();
         if(!$this->uniquePayersCollection->has($uniquePayersIdentifier)){
             $this->uniquePayersCollection->put($uniquePayersIdentifier,$newBalance->getPayer());
         }
-        $this->$newBalanceCollection->add($newBalance);
+        $this->newBalanceCollection->push($newBalance);
     }
 
     public function getUniqueFacilitiesCollection(){

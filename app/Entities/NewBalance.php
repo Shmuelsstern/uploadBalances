@@ -1,7 +1,7 @@
 <?php
 
 Namespace App\Entities;
-use App\Entities\NewBalanceRepo;
+use App\Entities\Repositories\NewBalanceRepo;
 
 class NewBalance{
 
@@ -15,17 +15,16 @@ class NewBalance{
 	private $payerInfo=[];
 	private $insurance;
     private $DOS;
-    private $newBalance;
+    private $balance;
 	private $policyNum;
     private $comments;
 
-    public function __construct(NewBalanceRepo $nbr, $newBalanceRow){
+    public function __construct(NewBalanceRepo $nbr,$newBalanceRow ){
 		$this->newBalanceRepo=$nbr;
 		$this->setParams($newBalanceRow);
 		$this->setFacility();
-		$this->resident = new Resident();
-		$this->resident->setRelatedFacility($this->facility);
-		$this->payer = new Payer();
+		$this->setResident();
+		$this->setPayer();
     }
 
 	public function setParams(Array $params){
@@ -48,14 +47,8 @@ class NewBalance{
 	}
 
 	public function setFacility(){
-		$uniqueFacilityIdentifier=$this->facilityInfo['uploadedFacilityName'];
-		if($this->newBalanceRepo->getUniqueFacilitiesCollection()->has($uniqueFacilityIdentifier)){
-			$this->facility=$this->newBalanceRepo->getUniqueFacilitiesCollection()->get($uniqueFacilityIdentifier);
-		}else{
 			$this->facility=new Facility();
-			$this->facility->setParams($this-facilityInfo);
-			$this->newBalanceRepo->getUniqueFacilitiesCollection()->put($uniqueFacilityIdentifier,$this->facility);
-		}
+			$this->facility->setParams($this->facilityInfo);
 	}
 
 	public function getUploadedFacilityName(){
@@ -127,14 +120,9 @@ class NewBalance{
 	}
 
 	public function setResident(){
-		$uniqueResidentIdentifier=$this->facilityInfo['uploadedFacilityName'].$this->residentInfo['patientId'];
-		if($this->newBalanceRepo->getUniqueResidentsCollection()->has($uniqueResidentIdentifier)){
-			$this->resident=$this->newBalanceRepo->getUniqueResidentsCollection()->get($uniqueResidentIdentifier);
-		}else{
 			$this->resident=new Resident();
-			$this->resident->setParams($this-residentInfo);
-			$this->newBalanceRepo->getUniqueResidentsCollection()->put($uniqueResidentIdentifier,$this->resident);
-		}
+			$this->resident->setParams($this->residentInfo);
+			$this->resident->setRelatedFacility($this->facility);
 	}
 
 	public function getPayerType(){
@@ -142,7 +130,16 @@ class NewBalance{
 	}
 
 	public function setPayerType($payerType){
-		$this->payerType = $payerType;
+		$this->payerInfo['payerType']= $payerType;
+	}
+
+	public function getPayer(){
+		return $this->payer;
+	}
+
+	public function setPayer(){
+			$this->payer=new Payer();
+			$this->payer->setParams($this->payerInfo);
 	}
 
 	public function getInsurance(){
@@ -152,22 +149,6 @@ class NewBalance{
 	public function setInsurance($insurance){
 		$this->insurance=$insurance;
 	}
-
-	public function getPayer(){
-		return $this->payer;
-	}
-
-	public function setPayer(){
-		$uniquePayerIdentifier=$this->payerInfo['payerType'];
-		if($this->newBalanceRepo->getUniquePayersCollection()->has($uniquePayerIdentifier)){
-			$this->payer=$this->newBalanceRepo->getUniquePayersCollection()->get($uniquePayerIdentifier);
-		}else{
-			$this->payer=new Payer();
-			$this->payer->setParams($this-residentInfo);
-			$this->newBalanceRepo->getUniquePayersCollection()->put($uniquePayerIdentifier,$this->payer);
-		}
-	}
-
 	public function getDOS(){
 		return $this->DOS;
 	}
@@ -176,12 +157,12 @@ class NewBalance{
 		$this->DOS = $DOS;
 	}
 
-	public function getNewBalance(){
-		return $this->newBalance;
+	public function getBalance(){
+		return $this->balance;
 	}
 
-	public function setNewBalance($newBalance){
-		$this->newBalance = $newBalance;
+	public function setBalance($balance){
+		$this->balance = $balance;
 	}
 
 	public function getPolicyNum(){

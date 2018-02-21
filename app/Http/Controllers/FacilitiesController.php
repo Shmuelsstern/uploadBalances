@@ -22,7 +22,8 @@ class FacilitiesController extends Controller{
         foreach($XMLresponse->record as $record){
             $QBrepo->pushFromXML($record);
         }
-        $facilitiesToMatch=$this->getUniqueValuesOfColumn($subject);
+        $newBalanceRepo=session('newBalanceRepo');/*dd($newBalanceRepo);*/
+        $facilitiesToMatch=$newBalanceRepo->getUniqueFacilitiesCollection()->keys()->all();
         $facilityMatcher = new Matcher($subject,$QBrepo,$facilitiesToMatch);
         $facilityMatcher->match();
         session(['facilityRepo'=>$QBrepo]);
@@ -30,30 +31,26 @@ class FacilitiesController extends Controller{
     } 
 
     public function updateNewFacilities(Request $request){
-        $uniqueValues=$this->getUniqueValuesOfColumn('facility');
+        $newBalanceRepo=session('newBalanceRepo');
+        $facilitiesToMatch=$newBalanceRepo->getUniqueFacilitiesCollection()->all();
         $newFacilities=[];
-        $repo = session('facilityRepo');
-        foreach($uniqueValues as $facilityName){
-            $stripped=strtolower(str_replace(' ','',$facilityName));
+        foreach($facilitiesToMatch as $facility){
+            $stripped=strtolower(str_replace(' ','',$facility->getUploadedFacilityName()));
             if($request->$stripped=="unmatched"){
-                $newFacilities[]=[$facilityName,$this->group['Symphony']];
+                $newFacilities[]=[$facility->getUploadedFacilityName(),$this->group['Symphony']];
             }else{
-                $repo->findBy('recordId',$request->$stripped)->setParams(['uploadedFacilityName'=>$facilityName,'recordId'=>$request->$stripped]);
+                $facility->setRecordId($request->$stripped);
             }
         }
         $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
         $newRecordIds = $importCSVRequestor->requestXML()->rids;
         $i=0;
-        foreach($uniqueValues as $facilityName){
-            $stripped=strtolower(str_replace(' ','',$facilityName));
-            if($request->$stripped=="unmatched"){
-                $currentFacility = new Facility();
-                $currentFacility->setParams(['recordId'=>$newRecordIds[$i],'uploadedFacilityName'=>$facilityName,'shortName'=>$facilityName]);
-                $repo->getCollection()->put($facilityName,$currentFacility);
-                $i++;
-            }
-        }
-        $rawUploadedNewBalances=session('rawUploadedNewBalances');
+        $testarray=[];
+    foreach($newRecordIds->fields as $field){
+        $facility=$newBalanceRepo->getUniqueFacilitiesCollection()->get((string)$field->field[0]);
+        $facility->setRecordId((int)$field->attributes()[0]);
+    }
+        session(['newBalanceRepo'=>$newBalanceRepo]);
         return redirect('/matchResidents');
     }
 

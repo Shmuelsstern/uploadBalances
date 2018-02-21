@@ -49,7 +49,8 @@ class API_ImportFromCSVRequester extends QuickbaseRequester{
         $specificRequest.= $this->CSVFileString;
         $specificRequest.='             ]]>
                               </records_csv>';
-        $specificRequest.='  <clist>'.$this->clist.'</clist>';
+        $specificRequest.='  <clist>'.$this->clist.'</clist>
+                             <clist_output>'.$this->clist.'</clist_output>';
         return $specificRequest;
     }
 

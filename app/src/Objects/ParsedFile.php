@@ -54,8 +54,8 @@ class ParsedFile{
 			$currentColumnName=$POSTData['column'.$columnIndex];
 			if(isset($currentColumnName)&&!empty($currentColumnName)){
 				if($currentColumnName=='balance' && !$this->hasSeparateDOSColumn){
-					$this->balanceDOSArray[balanceIndex]=$POSTData['DOS'.$columnIndex];
-					$this->balanceArray[balanceIndex]=$columnIndex;				
+					$this->balanceDOSArray[$balanceIndex]=$POSTData['DOS'.$columnIndex];
+					$this->balanceArray[$balanceIndex]=$columnIndex;				
 				}else{
 					$mappedColumns[$currentColumnName]=$columnIndex;
 				}
