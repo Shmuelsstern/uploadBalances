@@ -10,9 +10,11 @@ class ResidentRepo {
     const RESIDENTFIELDS = ['patientId','relatedFacility','firstName','lastName','DOB','socialSecurityNum','medicareNum','medicaidNum'];
     const RESIDENTFIELDSMAPPED = ['ID'=>'patientId','Related FACILITY'=>'relatedFacility','First Name'=>'firstName','Last Name'=>'lastName','DOB'=>'DOB','SS#'=>'socialSecurityNum','Medicare #'=>'medicareNum','Medicaid #'=>'medicaidNum'];
     private $collection;
+    private $neutralKeysCollection;
 
     public function __construct(){
         $this->collection = new Collection();
+        $this->neutralKeysCollection = new Collection();
     }
 
     public function pushFromXml($xmlResident){
@@ -39,5 +41,14 @@ class ResidentRepo {
             $resident->setParams($residentParams);
             $this->collection->put($uniqueIdentifier,$resident);
         }
+    }
+
+    public function setCollection(&$resident){
+        $this->neutralKeysCollection->put($resident->getUniqueIdentifier(),$resident);
+        //$this->collection->put($facility->getRecordId(),$facility);
+    }
+
+    public function getNeutralKeysCollection(){
+        return $this->neutralKeysCollection;
     }
 }

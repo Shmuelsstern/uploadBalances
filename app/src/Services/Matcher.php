@@ -8,33 +8,33 @@ class Matcher{
 
     private $matchExact;
     private $referenceRepo;
-    private $toMatchArray;
+    private $toMatchCollection;
     private $multipleMatcheds=[];
     private $objectType;
     private $matcheds=[];
 
-    public function __construct($objectType,$referenceRepo, $toMatchArray,$matchExact=false){
+    public function __construct($objectType,$referenceRepo, $toMatchCollection,$matchExact=false){
         $this->objectType = $objectType;
         $this->matchExact=$matchExact;
         $this->referenceRepo=$referenceRepo;
-        $this->toMatchArray=array_flip($toMatchArray);
+        $this->toMatchCollection=$toMatchCollection;
     }
 
     public function match(){
-        foreach($this->toMatchArray as $toMatch=>$v){
-            $strippedName=strtolower(str_replace(' ','',$toMatch));
+        foreach($this->toMatchCollection as $collectionKey=>$collectionItem){
+            $strippedName=strtolower(str_replace(' ','',$collectionKey));
             $exactMatch=$this->referenceRepo->getNeutralKeysCollection()->get($strippedName);
             if($exactMatch){
-                $this->matcheds[$toMatch]=['object'=>$exactMatch,'strippedName'=>$strippedName];
+                $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$exactMatch,'strippedName'=>$strippedName];
                 continue;
             }
             if($this->matchExact){
                 $unmatchedObject=$this->createObjectType();
                 $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
-                $this->matcheds[$toMatch]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
+                $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
                 continue;
             }
-            $this->matcheds[$toMatch]=['object'=>$this->getFuzzyMatch($toMatch),'strippedName'=>$strippedName];
+            $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$this->getFuzzyMatch($collectionKey),'strippedName'=>$strippedName];
         }
     }
 
@@ -61,8 +61,8 @@ class Matcher{
         }
     }
 
-    public function getToMatchArray(){
-        return $this->toMatchArray;
+    public function gettoMatch(){
+        return $this->toMatch;
     }
 
     public function getMultipleMatcheds(){

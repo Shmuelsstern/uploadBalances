@@ -22,11 +22,10 @@ class FacilitiesController extends Controller{
         foreach($XMLresponse->record as $record){
             $QBrepo->pushFromXML($record);
         }
-        $newBalanceRepo=session('newBalanceRepo');/*dd($newBalanceRepo);*/
-        $facilitiesToMatch=$newBalanceRepo->getUniqueFacilitiesCollection()->keys()->all();
+        $newBalanceRepo=session('newBalanceRepo');
+        $facilitiesToMatch=$newBalanceRepo->getUniqueFacilitiesCollection();
         $facilityMatcher = new Matcher($subject,$QBrepo,$facilitiesToMatch);
         $facilityMatcher->match();
-        session(['facilityRepo'=>$QBrepo]);
         return view('confirmMatchedFacilities',['facilityMatcher'=>$facilityMatcher]);
     } 
 
@@ -42,22 +41,15 @@ class FacilitiesController extends Controller{
                 $facility->setRecordId($request->$stripped);
             }
         }
-        $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
-        $newRecordIds = $importCSVRequestor->requestXML()->rids;
-        $i=0;
-        $testarray=[];
-    foreach($newRecordIds->fields as $field){
-        $facility=$newBalanceRepo->getUniqueFacilitiesCollection()->get((string)$field->field[0]);
-        $facility->setRecordId((int)$field->attributes()[0]);
-    }
-        session(['newBalanceRepo'=>$newBalanceRepo]);
+        if(!empty($newFacilities)){
+            $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
+            $newRecordIds = $importCSVRequestor->requestXML()->rids;
+            foreach($newRecordIds->fields as $field){
+                $facility=$newBalanceRepo->getUniqueFacilitiesCollection()->get((string)$field->field[0]);
+                $facility->setRecordId((int)$field->attributes()[0]);
+                $facility->setRelatedGroup((string)$field->field[1]);
+            }
+        }
         return redirect('/matchResidents');
-    }
-
-    public function getUniqueValuesOfColumn($subject){
-        $fieldName='uploaded'.ucfirst($subject).'Name';
-        $parsedFile=session('rawUploadedNewBalances');
-        $uniqueValues=array_values(array_unique(array_column($parsedFile->getIdentifiedColumnsArray(), $fieldName)));
-        return $uniqueValues;
     }
 }

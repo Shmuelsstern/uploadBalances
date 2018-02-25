@@ -26,3 +26,5 @@ Route::get('/matchFacilities','FacilitiesController@matchFacilities');
 Route::post('/updateNewFacilities','FacilitiesController@updateNewFacilities');
 
 Route::get('/matchResidents','ResidentsController@matchResidents');
+
+Route::get('/updateNewResidents','ResidentsController@updateNewResidents');

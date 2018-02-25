@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Entities\Resident;
 use App\Entities\Repositories\ResidentRepo;
 use App\src\Services\QuickbaseQuerier;
+use App\src\Services\Matcher;
+use App\src\Services\API_ImportFromCSVRequester;
 
 class ResidentsController extends Controller{
 
     private $subject = 'resident';
 
-    public function matchResidents(ResidentRepo $residentsToMatchRepo){
+    public function matchResidents(){
         $returnFields=['Record ID#','First Name','Last Name','ID','Medicare #','Related FACILITY','DOB','Medicaid #','SS#'];
         $QBQ= new QuickbaseQuerier($this->subject,'GROUP','equals','Symphony',$returnFields);
         $response = $QBQ->requestURL();
@@ -18,15 +20,41 @@ class ResidentsController extends Controller{
         foreach($response->record as $record){
             $QBrepo->pushFromXML($record);
         }
-        $parsedFile = session('rawUploadedNewBalances');
-        $facilityRepo = session('facilityRepo');
-        foreach($parsedFile->getIdentifiedColumnsArray() as $newBalanceRow){
-            $newBalanceRow['relatedFacility'] = $facilityRepo->getMatchedFacilities()[$newBalanceRow['facility']]->getRecordId();
-            $residentsToMatchRepo->add($newBalanceRow);
+        $newBalanceRepo=session('newBalanceRepo');
+        $residentsToMatch=$newBalanceRepo->getUniqueResidentsCollection();
+        $residentMatcher = new Matcher($this->subject,$QBrepo,$residentsToMatch,true);
+        $residentMatcher->match();
+        session(['matchedResidents'=>$residentMatcher->getMatcheds()]);
+        return redirect('/updateNewResidents');
+    }
+
+    public function updateNewResidents(){
+        $matchedResidents=session('matchedResidents');
+        $newBalanceRepo=session('newBalanceRepo');
+        $residentsToMatch=$newBalanceRepo->getUniqueResidentsCollection()->all();
+        $newResidents=[];
+        foreach($residentsToMatch as $resident){
+            $uniqueIdentifier=$resident->getUniqueIdentifier();
+            if($matchedResidents[$uniqueIdentifier]=="unmatched"){
+                $newResidents[]=[$resident->getPatientId(),$resident->getRelatedFacility()->getRecordId(),$resident->getFirstName(),$resident->getLastName(),$resident->getMedicareNum(),$resident->getDOB(),$resident->getMedicaidNum(),$resident->getSocialSecurityNum()];
+            }else{
+                $resident->setRecordId($matchedResidents[$uniqueIdentifier]['object']->getRecordId());
+            }
         }
-        dd($QBrepo,$residentsToMatchRepo);
-        $residentsMatcher = new Matcher($QBrepo,$residentsToMatchRepo);
-        $residentsMatcher->match();
+        if(!empty($newResidents)){
+            $importCSVRequestor = new API_ImportFromCSVRequester($this->subject,$newResidents,'8.9.6.7.23.14.24.22');
+            $newRecordIds = $importCSVRequestor->requestXML()->rids;
+            $i=0;
+            $testarray=[];
+            foreach($newRecordIds->fields as $field){
+                $resident=$newBalanceRepo->getUniqueResidentsCollection()->get((string)$field->field[0]);
+                $resident->setRecordId((int)$field->attributes()[0]);
+                $resident->setRelatedFacility((string)$field->field[1]);
+            } 
+        }
+        dd($newBalanceRepo);
+        //session(['newBalanceRepo'=>$newBalanceRepo]);
+        return redirect('');
     }
     
 }

@@ -37,11 +37,11 @@ class Facility{
 	}
 
 	public function getUploadedFacilityName(){
-		return $this->uploadedName;
+		return $this->uploadedFacilityName;
 	}
 
-	public function setUploadedFacilityName($uploadedName){
-		$this->uploadedName = $uploadedName;
+	public function setUploadedFacilityName($uploadedFacilityName){
+		$this->uploadedFacilityName = $uploadedFacilityName;
 	}
 
 	public function setRelatedGroup(){
@@ -51,10 +51,21 @@ class Facility{
 		}else{
 			$this->relatedGroup='nogroup';
 		}
-
 	}
 
 	public function getRelatedGroup(){
 		return $this->relatedGroup;
+	}
+
+	public function getUniqueIdentifier(){
+		return $this->relatedGroup.$this->getName();		
+	}
+
+	public function getName(){
+		if(isset($this->uploadedFacilityName)){
+			return $this->uploadedFacilityName;
+		}else{
+			return $this->shortName;
+		}
 	}
 }

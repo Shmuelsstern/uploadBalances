@@ -16,8 +16,10 @@ class Resident{
 
     public function setParams(Array $params){
         foreach($params as $key => $param){
-            $setter ='set'.ucfirst($key);
-            $this->$setter($param);
+			$setter ='set'.ucfirst($key);
+			if(method_exists($this,$setter)){
+				$this->$setter($param);
+			}
         }
 	}
 	
@@ -33,7 +35,12 @@ class Resident{
 	}
 
 	public function setRelatedFacility($relatedFacility){
-		$this->relatedFacility = $relatedFacility;
+		if ($relatedFacility instanceof Facility){
+			$this->relatedFacility = $relatedFacility;
+		}else{
+			$this->relatedFacility = new Facility();
+			$this->relatedFacility->setRecordId($relatedFacility);
+		}
 	}
 
 	public function getPatientId(){
@@ -92,4 +99,8 @@ class Resident{
 		$this->medicaidNum = $medicaidNum;
 	}
 
+	public function getUniqueIdentifier(){
+		$relatedFacilityId = $this->relatedFacility->getRecordId();
+		return $relatedFacilityId.$this->patientId;
+	}
 }

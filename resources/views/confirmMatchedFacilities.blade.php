@@ -18,7 +18,7 @@
                 <tbody>
  @foreach($facilityMatcher->getMatcheds() as $key=>$matchedFacility)
                <tr>
-                    <td>{{$key}}</td>
+                    <td>{{$matchedFacility['object']->getName()}}</td>
                     <td>                   
     @if($matchedFacility['object']->getShortName()=='unmatched')  
         {!! Form::select($matchedFacility['strippedName'],$facilityMatcher->getReferenceRepo()->getCollection()->mapWithKeys(function($item){
