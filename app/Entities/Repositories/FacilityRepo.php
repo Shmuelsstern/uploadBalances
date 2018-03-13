@@ -11,7 +11,7 @@ Class FacilityRepo{
 
     public function __construct(){
         $this->collection = new Collection();
-        $unmatchedFacility = new facility();
+        $unmatchedFacility = new Facility();
         $unmatchedFacility->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);        
         $this->collection->put('unmatched',$unmatchedFacility);
         $this->neutralKeysCollection = new Collection();
@@ -39,7 +39,7 @@ Class FacilityRepo{
     }
 
     public function setNeutralKeysCollection(&$facility){
-        $this->neutralKeysCollection->put(strtolower(str_replace(' ','',$facility->getShortName())),$facility);
+        $this->neutralKeysCollection->put(strtolower(str_replace(' ','',$facility->getUniqueIdentifier())),$facility);
     }
     public function getNeutralKeysCollection(){
         return $this->neutralKeysCollection;

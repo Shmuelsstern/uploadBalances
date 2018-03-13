@@ -8,6 +8,7 @@ class NewBalance{
 	private $newBalanceRepo;
 	private $recordId;
 	private $facility;
+	private $group;
 	private $facilityInfo=[];
 	private $resident;
 	private $residentInfo=[];
@@ -22,9 +23,7 @@ class NewBalance{
     public function __construct(NewBalanceRepo $nbr,$newBalanceRow ){
 		$this->newBalanceRepo=$nbr;
 		$this->setParams($newBalanceRow);
-		$this->setFacility();
-		$this->setResident();
-		$this->setPayer();
+		$this->setgroup();
     }
 
 	public function setParams(Array $params){
@@ -42,17 +41,33 @@ class NewBalance{
 		$this->recordId = $recordId;
 	}
 
+	public function setGroup(){
+		if (session('group')){
+			$this->group = session('group');
+		}else{
+			$this->group='nogroup';
+		}
+	}
+
+	public function getGroup(){
+		return $this->group;
+	}
+
 	public function getFacility(){
 		return $this->facility;
 	}
 
-	public function setFacility(){
+	public function setFacility($facility = false){
+		if($facility){
+			$this->facility=$facility;
+		}else{
 			$this->facility=new Facility();
 			$this->facility->setParams($this->facilityInfo);
+		}
 	}
 
 	public function getUploadedFacilityName(){
-		return $this->facility->getUploadedFacilityName();
+		return $this->facilityInfo['uploadedFacilityName'];
 	}
 
 	public function setUploadedFacilityName($uploadedFacilityName){
@@ -60,7 +75,7 @@ class NewBalance{
 	}
 
 	public function getPatientId(){
-		return $this->resident->getPatientId();
+		return $this->residentInfo['patientId'];
 	}
 
 	public function setPatientId($patientId){
@@ -76,7 +91,7 @@ class NewBalance{
 	}
 
 	public function getLastName(){
-		return $this->facility->getLastName();
+		return $this->resident->getLastName();
 	}
 
 	public function setLastName($lastName){
@@ -119,27 +134,35 @@ class NewBalance{
 		return $this->resident;
 	}
 
-	public function setResident(){
+	public function setResident($resident = false){
+		if($resident){
+			$this->resident=$resident;
+		}else{
 			$this->resident=new Resident();
 			$this->resident->setParams($this->residentInfo);
 			$this->resident->setRelatedFacility($this->facility);
+		}
 	}
 
 	public function getPayerType(){
-		return $this->payer->getPayerType();
+		return $this->payerInfo['name'];
 	}
 
 	public function setPayerType($payerType){
-		$this->payerInfo['payerType']= $payerType;
+		$this->payerInfo['name']= $payerType;
 	}
 
 	public function getPayer(){
 		return $this->payer;
 	}
 
-	public function setPayer(){
+	public function setPayer($payer = false){
+		if($payer){
+			$this->payer=$payer;
+		}else{
 			$this->payer=new Payer();
 			$this->payer->setParams($this->payerInfo);
+		}
 	}
 
 	public function getInsurance(){
@@ -158,7 +181,8 @@ class NewBalance{
 	}
 
 	public function getBalance(){
-		return $this->balance;
+		$balanceWODollarSign = str_replace(['(','$',',',' ',')'],['-',''],$this->balance);
+		return $balanceWODollarSign;
 	}
 
 	public function setBalance($balance){

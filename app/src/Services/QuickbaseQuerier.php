@@ -8,13 +8,15 @@ class QuickbaseQuerier extends QuickbaseRequester{
     private $databases=[];
     private $query;
     private $queryFid=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45','Related GROUP'=>'44'],
-                       'resident'=>['Record ID#'=>3,'First Name'=>6,'Last Name'=>7,'ID'=>8,'Medicare #'=>23,                    'Related FACILITY'=>9,'DOB'=>14,'Medicaid #'=>24,'SS#'=>22,'GROUP'=>30]];
+                        'resident'=>['Record ID#'=>3,'First Name'=>6,'Last Name'=>7,'ID'=>8,'Medicare #'=>23,'Related FACILITY'=>9,'DOB'=>14,'Medicaid #'=>24,'SS#'=>22,'FACILITY - GROUP'=>30],
+                        'payer'=>['Record ID#'=>3,'Name'=>6]];
     private $queryOperator=['contains'=>'CT','does not contain'=>'XCT','equals'=>'EX', 'not equal to'=>'XEX'];
     private $queryValue;
     private $includeRids;
     private $CList;
     private $clistMapping=['facility'=>['record ID#'=>'3','SHORT NAME'=>'40','GROUP'=>'45','Related GROUP'=>'44'],
-                           'resident'=>['Record ID#'=>3,'First Name'=>6,'Last Name'=>7,'ID'=>8,'Medicare #'=>23,                    'Related FACILITY'=>9,'DOB'=>14,'Medicaid #'=>24,'SS#'=>22,'GROUP'=>30]];//fields to be returned 
+                           'resident'=>['Record ID#'=>3,'First Name'=>6,'Last Name'=>7,'ID'=>8,'Medicare #'=>23,'Related FACILITY'=>9,'DOB'=>14,'Medicaid #'=>24,'SS#'=>22,'FACILITY - GROUP'=>30],
+                           'payer'=>['Record ID#'=>3,'Name'=>6]];//fields to be returned 
     private $slist;//fields used for sorting
 
 

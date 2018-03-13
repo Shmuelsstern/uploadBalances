@@ -55,7 +55,7 @@ class API_ImportFromCSVRequester extends QuickbaseRequester{
     }
 
     public function getSpecificURLRequest(){
-        //unsble to be done to the best of my knowledge
+        //unable to be done to the best of my knowledge
     }
 
 }

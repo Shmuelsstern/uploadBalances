@@ -45,7 +45,7 @@ class Facility{
 	}
 
 	public function setRelatedGroup(){
-		$relatedGroup= session('relatedGroup');
+		$relatedGroup= session('group');
 		if($relatedGroup){
 			$this->relatedGroup=$relatedGroup;
 		}else{

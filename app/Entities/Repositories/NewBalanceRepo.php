@@ -50,19 +50,32 @@ Class NewBalanceRepo{
     }
 
     public function add($newBalance){
-        $uniqueFacilityIdentifier=$newBalance->getUploadedFacilityName();
+        $uniqueFacilityIdentifier=$newBalance->getGroup().$newBalance->getUploadedFacilityName();
         if(!$this->uniqueFacilitiesCollection->has($uniqueFacilityIdentifier)){
+            $newBalance->setFacility();
             $this->uniqueFacilitiesCollection->put($uniqueFacilityIdentifier,$newBalance->getFacility());
+        }else{
+            $newBalance->setFacility($this->uniqueFacilitiesCollection->get($uniqueFacilityIdentifier));
         }
         $uniqueResidentIdentifier=$newBalance->getUploadedFacilityName().$newBalance->getPatientId();
         if(!$this->uniqueResidentsCollection->has($uniqueResidentIdentifier)){
+            $newBalance->setResident();
             $this->uniqueResidentsCollection->put($uniqueResidentIdentifier,$newBalance->getResident());
+        }else{
+            $newBalance->setResident($this->uniqueResidentsCollection->get($uniqueResidentIdentifier));
         }       
         $uniquePayersIdentifier=$newBalance->getPayerType();
         if(!$this->uniquePayersCollection->has($uniquePayersIdentifier)){
+            $newBalance->setPayer();
             $this->uniquePayersCollection->put($uniquePayersIdentifier,$newBalance->getPayer());
-        }
+        }else{
+            $newBalance->setPayer($this->uniquePayersCollection->get($uniquePayersIdentifier));
+        } 
         $this->newBalanceCollection->push($newBalance);
+    }
+
+    public function getNewBalanceCollection(){
+        return $this->newBalanceCollection;
     }
 
     public function getUniqueFacilitiesCollection(){
@@ -75,5 +88,9 @@ Class NewBalanceRepo{
 
     public function getUniquePayersCollection(){
         return $this->uniquePayersCollection;
+    }
+
+    public function setUniqueResidentsCollection($uniqueResidentsCollection){
+        return $this->uniqueResidentsCollection=$uniqueResidentsCollection;
     }
 }

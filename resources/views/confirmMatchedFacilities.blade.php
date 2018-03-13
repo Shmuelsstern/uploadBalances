@@ -20,7 +20,7 @@
                <tr>
                     <td>{{$matchedFacility['object']->getName()}}</td>
                     <td>                   
-    @if($matchedFacility['object']->getShortName()=='unmatched')  
+    @if($matchedFacility['object']->getRecordID()=='unmatched')  
         {!! Form::select($matchedFacility['strippedName'],$facilityMatcher->getReferenceRepo()->getCollection()->mapWithKeys(function($item){
         return [$item->getRecordId()=>$item->getShortName()];
     })->all()) !!} 

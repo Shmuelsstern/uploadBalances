@@ -34,22 +34,25 @@ class FacilitiesController extends Controller{
         $facilitiesToMatch=$newBalanceRepo->getUniqueFacilitiesCollection()->all();
         $newFacilities=[];
         foreach($facilitiesToMatch as $facility){
-            $stripped=strtolower(str_replace(' ','',$facility->getUploadedFacilityName()));
+            $stripped=strtolower(str_replace(' ','',$facility->getUniqueIdentifier()));
             if($request->$stripped=="unmatched"){
                 $newFacilities[]=[$facility->getUploadedFacilityName(),$this->group['Symphony']];
             }else{
                 $facility->setRecordId($request->$stripped);
             }
         }
-        if(!empty($newFacilities)){
-            $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.44');
+        if(!empty($newFacilities)&&isset($newFacilities)){
+            $importCSVRequestor = new API_ImportFromCSVRequester('facility',$newFacilities,'40.45');
             $newRecordIds = $importCSVRequestor->requestXML()->rids;
             foreach($newRecordIds->fields as $field){
-                $facility=$newBalanceRepo->getUniqueFacilitiesCollection()->get((string)$field->field[0]);
+                $facility=$newBalanceRepo->getUniqueFacilitiesCollection()->get((string)$field->field[1].(string)$field->field[0]);
                 $facility->setRecordId((int)$field->attributes()[0]);
                 $facility->setRelatedGroup((string)$field->field[1]);
             }
         }
+        $newBalanceRepo->SetUniqueResidentsCollection($newBalanceRepo->getUniqueResidentsCollection()->mapWithKeys(function($uniqueResident,$key){
+            return [$uniqueResident->getRelatedFacility()->getRecordId().$uniqueResident->getPatientId()=>$uniqueResident];
+        }));
         return redirect('/matchResidents');
     }
 }

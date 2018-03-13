@@ -1,3 +1,5 @@
+<?php session(['group'=>'Symphony']);?>
+
 @extends('layouts')
 
 @section('title', 'Upload New Balances')

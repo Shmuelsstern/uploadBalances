@@ -22,23 +22,21 @@ class Matcher{
 
     public function match(){
         foreach($this->toMatchCollection as $collectionKey=>$collectionItem){
-            $strippedName=strtolower(str_replace(' ','',$collectionKey));
+            $strippedName=strtolower(str_replace(' ','',$collectionItem->getUniqueIdentifier()));
             $exactMatch=$this->referenceRepo->getNeutralKeysCollection()->get($strippedName);
             if($exactMatch){
                 $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$exactMatch,'strippedName'=>$strippedName];
-                continue;
-            }
-            if($this->matchExact){
+            }elseif($this->matchExact){
                 $unmatchedObject=$this->createObjectType();
-                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>$collectionItem->getName()]);
                 $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$unmatchedObject,'strippedName'=>$strippedName];
-                continue;
+            }else{
+                 $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$this->getFuzzyMatch($collectionKey,$collectionItem),'strippedName'=>$strippedName];
             }
-            $this->matcheds[$collectionItem->getUniqueIdentifier()]=['object'=>$this->getFuzzyMatch($collectionKey),'strippedName'=>$strippedName];
         }
     }
 
-    public function getFuzzyMatch($toMatch){
+    public function getFuzzyMatch($toMatch,$collectionItem){
         $matched=[];
         foreach($this->referenceRepo->getNeutralKeysCollection() as $referenceToMatch=>$object){
             $strippedKey = strtolower(str_replace(' ','',$toMatch));
@@ -49,14 +47,14 @@ class Matcher{
         switch(true){
             case count($matched)==0:
                 $unmatchedObject=$this->createObjectType();
-                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>'unmatched']);
+                $unmatchedObject->setParams(['recordId'=>'unmatched','shortName'=>$collectionItem->getName()]);
                 return $unmatchedObject;
             case count($matched)==1:
                 return $matched[0];
             case count($matched)>1:
                 $this->multipleMatcheds[$toMatch]=$matched;
                 $multipleMatchedObject=$this->createObjectType();
-                $multipleMatchedObject->setParams(['recordId'=>'multiple matched','shortName'=>'multiple matched']);
+                $multipleMatchedObject->setParams(['recordId'=>'multiple matched','shortName'=>$collectionItem->getName()]);
                 return $multipleMatchedObject;
         }
     }

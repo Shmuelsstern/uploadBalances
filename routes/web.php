@@ -28,3 +28,9 @@ Route::post('/updateNewFacilities','FacilitiesController@updateNewFacilities');
 Route::get('/matchResidents','ResidentsController@matchResidents');
 
 Route::get('/updateNewResidents','ResidentsController@updateNewResidents');
+
+Route::get('/matchPayers','PayersController@matchPayers');
+
+Route::post('/updateNewPayers','PayersController@updateNewPayers');
+
+Route::get('/uploadNewBalancesToQuickbase','NewBalancesController@uploadNewBalancesToQuickbase');

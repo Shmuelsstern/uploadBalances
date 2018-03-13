@@ -14,7 +14,7 @@ class ResidentsController extends Controller{
 
     public function matchResidents(){
         $returnFields=['Record ID#','First Name','Last Name','ID','Medicare #','Related FACILITY','DOB','Medicaid #','SS#'];
-        $QBQ= new QuickbaseQuerier($this->subject,'GROUP','equals','Symphony',$returnFields);
+        $QBQ= new QuickbaseQuerier($this->subject,'FACILITY - GROUP','equals','Symphony',$returnFields);
         $response = $QBQ->requestURL();
         $QBrepo = new ResidentRepo();
         foreach($response->record as $record){
@@ -35,7 +35,7 @@ class ResidentsController extends Controller{
         $newResidents=[];
         foreach($residentsToMatch as $resident){
             $uniqueIdentifier=$resident->getUniqueIdentifier();
-            if($matchedResidents[$uniqueIdentifier]=="unmatched"){
+            if($matchedResidents[$uniqueIdentifier]['object']->getRecordId()=="unmatched"){
                 $newResidents[]=[$resident->getPatientId(),$resident->getRelatedFacility()->getRecordId(),$resident->getFirstName(),$resident->getLastName(),$resident->getMedicareNum(),$resident->getDOB(),$resident->getMedicaidNum(),$resident->getSocialSecurityNum()];
             }else{
                 $resident->setRecordId($matchedResidents[$uniqueIdentifier]['object']->getRecordId());
@@ -44,17 +44,12 @@ class ResidentsController extends Controller{
         if(!empty($newResidents)){
             $importCSVRequestor = new API_ImportFromCSVRequester($this->subject,$newResidents,'8.9.6.7.23.14.24.22');
             $newRecordIds = $importCSVRequestor->requestXML()->rids;
-            $i=0;
-            $testarray=[];
             foreach($newRecordIds->fields as $field){
-                $resident=$newBalanceRepo->getUniqueResidentsCollection()->get((string)$field->field[0]);
+                $resident=$newBalanceRepo->getUniqueResidentsCollection()->get((string)$field->field[1].(string)$field->field[0]);
                 $resident->setRecordId((int)$field->attributes()[0]);
-                $resident->setRelatedFacility((string)$field->field[1]);
             } 
         }
-        dd($newBalanceRepo);
-        //session(['newBalanceRepo'=>$newBalanceRepo]);
-        return redirect('');
+        return redirect('/matchPayers');
     }
     
 }

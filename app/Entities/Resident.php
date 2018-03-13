@@ -51,6 +51,10 @@ class Resident{
 		$this->patientId = $patientId;
 	}
 
+	public function setID($patientId){
+		$this->patientId = $patientId;
+	}
+
 	public function getFirstName(){
 		return $this->firstName;
 	}
@@ -65,6 +69,10 @@ class Resident{
 
 	public function setLastName($lastName){
 		$this->lastName = $lastName;
+	}
+
+	public function getName(){
+		return 'name';
 	}
 
 	public function getDOB(){

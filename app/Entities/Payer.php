@@ -5,7 +5,7 @@ namespace App\Entities;
 class Payer{
 
     private $recordId;
-    private $payerType;
+    private $name;
 
     public function setParams(Array $params){
         foreach($params as $key => $param){
@@ -22,12 +22,17 @@ class Payer{
 		$this->recordId = $recordId;
 	}
 
-	public function getPayerType(){
-		return $this->payerType;
+	public function getName(){
+		return $this->name;
 	}
 
-	public function setPayerType($payerType){
-		$this->payerType = $payerType;
+	public function setName($name){
+		$this->name = $name;
+	}
+
+	//hack for matcher
+	public function setShortName($name){
+		$this->name = $name;
 	}
 
 	public function getInsurance(){
@@ -36,5 +41,9 @@ class Payer{
 
 	public function setInsurance($insurance){
 		$this->insurance = $insurance;
+	}
+
+	public function getUniqueIdentifier(){
+		return $this->name;
 	}
 }

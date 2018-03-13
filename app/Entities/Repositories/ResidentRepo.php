@@ -45,7 +45,6 @@ class ResidentRepo {
 
     public function setCollection(&$resident){
         $this->neutralKeysCollection->put($resident->getUniqueIdentifier(),$resident);
-        //$this->collection->put($facility->getRecordId(),$facility);
     }
 
     public function getNeutralKeysCollection(){
