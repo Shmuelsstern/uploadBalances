@@ -14,8 +14,14 @@ $count=0;
 $columnsAmount= count($uploadedFile->getParsedFileArray()[0]); 
 @endphp  
                 <thead>
-                    <tr>    
-                        <th>{!! Form::submit('confirmed columns',['id' => 'submitButton']) !!}</th>
+                    <tr> 
+@for($i=0;$i<$columnsAmount;$i++) 
+                    <th>
+    @if(($i==0)||($i==($columnsAmount-1)))
+                    {!! Form::submit('confirmed columns',['class' => 'submitButton']) !!}    
+    @endif 
+                    </th>                                 
+@endfor                        
                     </tr>
                     <tr>
 @for($i=0;$i<$columnsAmount;$i++)
@@ -63,5 +69,5 @@ $columnsAmount= count($uploadedFile->getParsedFileArray()[0]);
 @endsection
 
 @section('scripts')
-    <script src='js/chooseUploadedNewBalancesColumns.23.js?';></script>
+    <script src='js/chooseUploadedNewBalancesColumns.25.js?';></script>
 @endsection

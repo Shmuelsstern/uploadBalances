@@ -10,11 +10,12 @@ $(function(){
     console.log(optionsArray);
 
     select.change(function(e){
-        console.log('#DOS'+e.target.dataset.column);
+        let DOSColumn=$('#DOS'+e.target.dataset.column);
+        console.log(DOSColumn);
         if ($(this).val()==='balance'){
-            $('#DOS'+e.target.dataset.column).css('visibility','visible');
+            DOSColumn.css('visibility','visible');
         }else{
-            $('#DOS'+e.target.dataset.column).css('visibility','hidden');
+            DOSColumn.css('visibility','hidden');
         }
     });
 });
