@@ -15,6 +15,8 @@ Route::get('/', function () {
     return view('uploadBalancesFile');
 });
 
+Route::get('/', 'WelcomeController@welcome');
+
 Route::post('/uploadNewBalances',  'FileController@parseFileIntoArray');
 
 Route::post('/setColumns', 'NewBalancesController@setColumns');

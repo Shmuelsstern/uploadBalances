@@ -2,7 +2,7 @@
 
 namespace App\src\Services;
 
-abstract class QuickbaseRequester{
+class QuickbaseRequester{
 
     private $appToken; 
     private $userToken;
@@ -11,28 +11,60 @@ abstract class QuickbaseRequester{
     private $action;
     private $request;
     private $method = 'POST';
-    private $header;
+    private $requestBuilder;
     protected $subject;
 
-    public function __construct($subject,$action){
-        $this->appToken = env('QB_TEST_APPTOKEN'); 
-        $this->userToken = env('QB_USERTOKEN');
-        $this->url = env('QB_APP_URL');
-        $this->database = env('QB_TEST_'.strtoupper($subject).'TABLE');
-        $this->action = $action;
-        $this->subject=$subject;
+    public function __construct($apptoken,$usertoken, $url)
+    {
+        $this->appToken = $apptoken;
+        $this->userToken = $usertoken;
+        $this->url = $url;
     }
 
-    public function setXMLRequest(){    
+    /**
+     * @param mixed $subject
+     * @return QuickbaseRequester
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+        $this->database = env('QB_TEST_'.strtoupper($subject).'TABLE');
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $action
+     * @return QuickbaseRequester
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+        $builder = $action.'Builder';
+        $this->requestBuilder = new $builder($this->subject);
+
+        return $this;
+    }
+
+    public function getRequestBuilder()
+    {
+        return $this->requestBuilder;
+    }
+
+    public function setXMLRequest()
+    {
         $postString='<qdbapi>';
         $postString.='  <usertoken>'.$this->userToken.'</usertoken>';
         $postString.='  <apptoken>'.$this->appToken.'</apptoken>';
-        $postString.= $this->getSpecificXMLRequest();   
+        $postString.= $this->requestBuilder->getBuild();
         $postString.='</qdbapi>'; 
         $this->request = $postString;
+
+        return $this;
     }
 
-    public function requestXML(){
+    public function requestXML()
+    {
         $opts = array('http' =>
             array(
                 'method'  => $this->method,
@@ -42,15 +74,19 @@ abstract class QuickbaseRequester{
                 'content' => $this->request
             )
         );
-        $context = stream_context_create($opts);  
-        $result = file_get_contents($this->url.$this->database, false, $context);
+        $context = stream_context_create($opts);
+        if(!$result = file_get_contents($this->url.$this->database, false, $context))
+        {
+            throw new \Exception('did not get contents');
+        }
         $xml_result = simplexml_load_string($result); 
         return $xml_result;
     }
 
-    public abstract function getSpecificXMLRequest();
+    //public abstract function getSpecificXMLRequest();
 
-    public function setURLRequest(){
+    /*public function setURLRequest()
+    {
         $requestString = $this->url;
         $requestString.= $this->database;
         $requestString.= '?a='.$this->action;
@@ -61,8 +97,8 @@ abstract class QuickbaseRequester{
     
     public function requestURL(){
         return simplexml_load_file($this->request);
-    }
+    }*/
 
-    public abstract function getSpecificURLRequest();
+    //public abstract function getSpecificURLRequest();
 
 }

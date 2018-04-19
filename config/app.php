@@ -183,6 +183,7 @@ return [
         App\Providers\SourceFileServiceProvider::class,
         App\Providers\ResidentRepoServiceProvider::class,
         App\Providers\NewBalanceRepoServiceProvider::class,
+        App\Providers\ComposerServiceProvider::class,
     ],
 
     /*
