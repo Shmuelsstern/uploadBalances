@@ -19,10 +19,10 @@ class NewBalancesController extends Controller{
         return redirect('/matchFacilities');
     } 
     
-    public function setNewBalances(){
+    /*public function setNewBalances(){
         $facility = new \App\Entities\Facility(['uploadedName'=>'testing']);
         dd( $facility->getUploadedName());
-    }
+    }*/
 
     public function uploadNewBalancesToQuickbase(){
         $newBalances = session('newBalanceRepo')->getNewBalanceCollection()->all();

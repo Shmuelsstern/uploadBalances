@@ -40,7 +40,7 @@ class QuickbaseRequester{
     public function setAction($action)
     {
         $this->action = $action;
-        $builder = $action.'Builder';
+        $builder = 'App\src\Services\\'.$action.'Builder';
         $this->requestBuilder = new $builder($this->subject);
 
         return $this;
@@ -63,6 +63,10 @@ class QuickbaseRequester{
         return $this;
     }
 
+    /**
+     * @return \SimpleXMLElement
+     * @throws \Exception
+     */
     public function requestXML()
     {
         $opts = array('http' =>
@@ -78,7 +82,11 @@ class QuickbaseRequester{
         if(!$result = file_get_contents($this->url.$this->database, false, $context))
         {
             throw new \Exception('did not get contents');
+        }elseif(!empty($result->errcode)&& $result->errcode<>0){
+            throw new \Exception($result->errmessage);
         }
+
+
         $xml_result = simplexml_load_string($result); 
         return $xml_result;
     }

@@ -28,6 +28,8 @@ class Group
     public function setName($name)
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -44,6 +46,8 @@ class Group
     public function setRecordId($recordId)
     {
         $this->recordId = $recordId;
+
+        return $this;
     }
 
 

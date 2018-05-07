@@ -1,22 +1,15 @@
-<?php session(['group'=>'Symphony']);?>
-
 @extends('layouts')
 
 @section('title', 'Upload New Balances')
 
 @section('content')
 
-<div class='container padding-top'>
-    <div class='row'>
-        <div class='col-xs-12'>
+<div >
         {!! Form::open(['url' => 'uploadNewBalances', 'files' => true]); !!}
-        Select the file with new balances(csv) <br><br>
-        {!! Form::file('newBalancesFile') !!}<hr>
-        {!! Form::submit('upload'); !!}
+        <h2 class='p-3 text-center'>Select the file with new balances(csv)</h2><br><br>
+        {!! Form::file('newBalancesFile') !!}
+        <button type="submit" class="btn btn-primary">Upload</button>
         {!! Form::close() !!}
-
-        </div>
-    </div>
 </div>
 
 @endsection

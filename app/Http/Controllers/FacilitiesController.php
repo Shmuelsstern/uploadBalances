@@ -11,15 +11,42 @@ use App\Entities\Facility;
 
 class FacilitiesController extends Controller{
 
-    private $group=['Symphony'=>1];
+    private $group;
+    private $subject = 'facility';
+
+    private function __construct()
+    {
+        try {
+            $this->group = $this->getSessionGroup();
+        } catch (\Exception $e) {
+            $pattern = "%s in %s on line %s. \nTRACE: %s";
+            logger(sprintf($pattern, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString()));
+        }
+    }
+
+    /**
+     * @return \Illuminate\Session\SessionManager|\Illuminate\Session\Store|mixed
+     * @throws \Exception
+     */
+    private function getSessionGroup()
+    {
+        if (session('group')!== null) {
+            $group = session('group');
+        } else {
+            throw new \Exception('no group selected');
+        }
+
+        return $group;
+    }
+
 
     public function matchFacilities(){
         $subject='facility';
         $returnFields=['record ID#','SHORT NAME','Related GROUP'];
         $QBQ= new QuickbaseQuerier($subject,'GROUP','equals','Symphony',$returnFields);
-        $XMLresponse = $QBQ->requestURL();
+        $XMLResponse = $QBQ->requestURL();
         $QBrepo = new FacilityRepo();
-        foreach($XMLresponse->record as $record){
+        foreach($XMLResponse->record as $record){
             $QBrepo->pushFromXML($record);
         }
         $newBalanceRepo=session('newBalanceRepo');

@@ -27,7 +27,7 @@ class API_DoQueryBuilder
      * API_DoQueryBuilder constructor.
      * @param $subject
      */
-    private function __construct($subject  )
+    public function __construct($subject  )
     {
         $this->subject = $subject;
     }
@@ -38,7 +38,7 @@ class API_DoQueryBuilder
      * @param $queryValue
      * @return $this
      */
-    private function setQuery($queryField, $operator, $queryValue)
+    public function setQuery($queryField, $operator, $queryValue)
     {
         $queryField = self::MAPPED_FIELDS[$this->subject][$queryField];
         $operator = self::QUERY_OPERATOR[$operator];
@@ -54,12 +54,12 @@ class API_DoQueryBuilder
     public function setReturnList($returnFields)
     {
         $CList='';
-        $delimiter="<clist>=";
+        $delimiter="<clist>";
         foreach($returnFields as $rf){
             $CList.=$delimiter.self::MAPPED_FIELDS[$this->subject][$rf];
             $delimiter='.';
         }
-        $CList.='</clist>';
+        $CList.= '</clist>';
         $this->returnList = $CList;
 
         return $this;

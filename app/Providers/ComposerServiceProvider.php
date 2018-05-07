@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\View;
 
 class ComposerServiceProvider extends ServiceProvider
 {
+
     public function boot()
     {
         View::composer(

@@ -11,25 +11,22 @@ namespace App\Entities\Repositories;
 
 use App\Entities\Group;
 use App\src\Services\QuickbaseRequester;
-use Exception;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Log;
 
 class GroupRepo
 {
     private $collection;
-    const SUBJECT = "Group";
+    const SUBJECT = "group";
 
+    /**
+     * GroupRepo constructor.
+     * @param QuickbaseRequester $QBR
+     */
     public function __construct(QuickbaseRequester $QBR)
     {
         $this->collection = new Collection();
-        $QBR->setSubject(self::SUBJECT)->setAction('API_DoQuery')->getRequestBuilder()->setQuery('collections','equals','TRUE')->setReturnList(['record ID#','Name']);
-        try {
-            $result = $QBR->setXMLRequest()->requestXML();
-        } catch (Exception $e) {
-            Log::error($e->getMessage());
-        }
-        $this->pushFromXml($result);
+        $this->populateCollection($QBR);
+        //dd($this->collection);
     }
 
     /**
@@ -41,12 +38,19 @@ class GroupRepo
     }
 
     /**
-     * @param Collection $collection
+     * @param QuickbaseRequester $QBR
      * @return GroupRepo
      */
-    public function setCollection(Collection $collection): GroupRepo
+    public function populateCollection(QuickbaseRequester $QBR)
     {
-        $this->collection = $collection;
+        $QBR->setSubject(self::SUBJECT)->setAction('API_DoQuery')->getRequestBuilder()->setQuery('collections','equals','TRUE')->setReturnList(['record ID#','Name'])->buildDoQuery();
+        try {
+            $results = $QBR->setXMLRequest()->requestXML();
+        } catch (\Throwable $e) {
+            $pattern = "%s in %s on line %s. \nTRACE: %s";
+            logger(sprintf($pattern, $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString()));
+        }
+        $this->pushFromXml($results->record);
         return $this;
     }
 
@@ -59,18 +63,22 @@ class GroupRepo
     }
 
     /**
-     * @param $xmlGroup
+     *
      */
-    public function pushFromXml($xmlGroup)
+    public function pushFromXml($xmlGroups)
     {
-    $group = new Group();
-        foreach($xmlGroup as $key => $value)
+        foreach ($xmlGroups as $xmlGroup)
         {
-            $setParam='set'.ucfirst(camel_case($key));
-            if(method_exists($group,$setParam)){
-                $group->$setParam((string)$value);
+            $group = new Group();
+            foreach ($xmlGroup as $key => $value)
+            {
+                $setParam = 'set' . ucfirst(camel_case($key));
+                if (method_exists($group, $setParam))
+                {
+                    $group->$setParam((string)$value);
+                }
             }
+            $this->add($group);
         }
-    $this->add($group);
     }
 }

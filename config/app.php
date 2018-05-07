@@ -184,6 +184,7 @@ return [
         App\Providers\ResidentRepoServiceProvider::class,
         App\Providers\NewBalanceRepoServiceProvider::class,
         App\Providers\ComposerServiceProvider::class,
+        App\Providers\QuickbaseRequesterServiceProvider::class,
     ],
 
     /*

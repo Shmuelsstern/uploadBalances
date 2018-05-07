@@ -24,8 +24,14 @@ class Facility{
 		return $this->recordId;
 	}
 
-	public function setRecordId($recordId){
+    /**
+     * @param $recordId
+     * @return $this
+     */
+    public function setRecordId($recordId){
 		$this->recordId = $recordId;
+
+		return $this;
 	}
 
 	public function getShortName(){
@@ -34,6 +40,8 @@ class Facility{
 
 	public function setShortName($shortName){
 		$this->shortName = $shortName;
+
+		return $this;
 	}
 
 	public function getUploadedFacilityName(){
