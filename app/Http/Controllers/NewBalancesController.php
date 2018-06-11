@@ -5,6 +5,7 @@ use App\Entities\Repositories\NewBalanceRepo;
 
 use Illuminate\Http\Request;
 use App\src\Services\API_ImportFromCSVRequester;
+use Illuminate\Support\Facades\Session;
 
 class NewBalancesController extends Controller{
 

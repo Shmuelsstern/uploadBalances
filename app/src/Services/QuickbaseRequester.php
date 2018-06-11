@@ -2,6 +2,8 @@
 
 namespace App\src\Services;
 
+use App\src\Interfaces\RequestBuilder;
+
 class QuickbaseRequester{
 
     private $appToken; 
@@ -11,6 +13,8 @@ class QuickbaseRequester{
     private $action;
     private $request;
     private $method = 'POST';
+
+    /** @var RequestBuilder $requestBuilder */
     private $requestBuilder;
     protected $subject;
 
@@ -35,6 +39,7 @@ class QuickbaseRequester{
 
     /**
      * @param mixed $action
+     * @var  $builder RequestBuilder
      * @return QuickbaseRequester
      */
     public function setAction($action)
@@ -51,6 +56,9 @@ class QuickbaseRequester{
         return $this->requestBuilder;
     }
 
+    /**
+     * @return $this
+     */
     public function setXMLRequest()
     {
         $postString='<qdbapi>';

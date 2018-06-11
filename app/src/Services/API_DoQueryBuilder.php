@@ -9,7 +9,9 @@
 namespace App\src\Services;
 
 
-class API_DoQueryBuilder
+use App\src\Interfaces\RequestBuilder;
+
+class API_DoQueryBuilder implements RequestBuilder
 {
     private $subject;
     private $query;
@@ -40,7 +42,6 @@ class API_DoQueryBuilder
      */
     public function setQuery($queryField, $operator, $queryValue)
     {
-        $queryField = self::MAPPED_FIELDS[$this->subject][$queryField];
         $operator = self::QUERY_OPERATOR[$operator];
         $this->query = '<query>{'.$queryField.".".$operator.".".$queryValue.'}</query>';
 
@@ -56,7 +57,7 @@ class API_DoQueryBuilder
         $CList='';
         $delimiter="<clist>";
         foreach($returnFields as $rf){
-            $CList.=$delimiter.self::MAPPED_FIELDS[$this->subject][$rf];
+            $CList.=$delimiter.$rf;
             $delimiter='.';
         }
         $CList.= '</clist>';
@@ -70,7 +71,7 @@ class API_DoQueryBuilder
         $SList='';
         $delimiter="<slist>=";
         foreach($sortFields as $sf){
-            $SList.=$delimiter.self::MAPPED_FIELDS[$this->subject][$sf];
+            $SList.=$delimiter.$sf;
             $delimiter='.';
         }
         $SList.='</slist>';
@@ -79,7 +80,7 @@ class API_DoQueryBuilder
         return $this;
     }
 
-    public function buildDoQuery()
+    public function buildRequest()
     {
         $this->doQuery = $this->query.$this->returnList.$this->sortList;
     }

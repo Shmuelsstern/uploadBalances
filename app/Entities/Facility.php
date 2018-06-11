@@ -7,6 +7,7 @@ class Facility{
     private $recordId;
     private $shortName;
 	private $uploadedFacilityName;
+	/* @var Group */
 	private $relatedGroup;
 
     public function __construct(){
@@ -57,7 +58,8 @@ class Facility{
 		if($relatedGroup){
 			$this->relatedGroup=$relatedGroup;
 		}else{
-			$this->relatedGroup='nogroup';
+			$this->relatedGroup= new Group();
+            $this->relatedGroup->setName('noname')->setRecordId('xxx');
 		}
 	}
 
@@ -66,7 +68,7 @@ class Facility{
 	}
 
 	public function getUniqueIdentifier(){
-		return $this->relatedGroup.$this->getName();		
+		return $this->relatedGroup->getName().$this->getName();
 	}
 
 	public function getName(){

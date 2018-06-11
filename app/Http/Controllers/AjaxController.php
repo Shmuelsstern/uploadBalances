@@ -16,6 +16,21 @@ use Illuminate\Http\Request;
 
 class AjaxController extends Controller
 {
+    const QB_GROUP_RECORD_ID = 'record ID#';
+    const QB_GROUP_NAME = 'Name';
+    const QB_GROUP_COLLECTIONS_CHECKBOX = 'collections';
+    const QB_GROUP_RECORD_ID_FIELD = 3;
+    const QB_GROUP_NAME_FIELD = 6;
+    const QB_GROUP_COLLECTIONS_CHECKBOX_FIELD = 24;
+    const QB_FACILITY_RECORD_ID = 'record ID#';
+    const QB_FACILITY_NAME = 'SHORT NAME';
+    const QB_FACILITY_RELATED_GROUP_ID = 'Related GROUP';
+    const QB_FACILITY_RELATED_GROUP_NAME = 'GROUP';
+    const QB_FACILITY_RECORD_ID_FIELD = 3;
+    const QB_FACILITY_NAME_FIELD = 40;
+    const QB_FACILITY_RELATED_GROUP_ID_FIELD = 44;
+    const QB_FACILITY_RELATED_GROUP_NAME_FIELD = 45;
+
     public function groupSettings(Request $request, QuickbaseRequester $QBR)
     {
 
@@ -27,8 +42,8 @@ class AjaxController extends Controller
         $facility = new Facility();
         $facility->setRecordId('all')->setShortName('All Facilities');
         session(['facility'=>$facility]);
-        $QBR->setSubject('facility')->setAction('API_DoQuery')->getRequestBuilder()->setQuery('Related GROUP','equals',
-            $groupID)->setReturnList(['record ID#','SHORT NAME'])->buildDoQuery();
+        $QBR->setSubject('facility')->setAction('API_DoQuery')->getRequestBuilder()->setQuery(self::QB_FACILITY_RELATED_GROUP_ID,'equals',
+            $groupID)->setReturnList([self::QB_FACILITY_RECORD_ID_FIELD,self::QB_FACILITY_NAME_FIELD])->buildRequest();
         try {
             $results = $QBR->setXMLRequest()->requestXML();
         } catch (\Throwable $e) {

@@ -2,12 +2,14 @@
 
 Namespace App\Entities;
 use App\Entities\Repositories\NewBalanceRepo;
+use App\Entities\Group;
 
 class NewBalance{
 
 	private $newBalanceRepo;
 	private $recordId;
 	private $facility;
+	/*@var Group*/
 	private $group;
 	private $facilityInfo=[];
 	private $resident;
@@ -49,7 +51,10 @@ class NewBalance{
 		}
 	}
 
-	public function getGroup(){
+    /**
+     * @return Group
+     */
+    public function getGroup(){
 		return $this->group;
 	}
 

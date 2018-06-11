@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Entities\Repositories;
+use App\src\Objects\ParsedFile;
 use Illuminate\Support\Collection;
 use App\Entities\NewBalance;
 
@@ -11,6 +12,9 @@ Class NewBalanceRepo{
     private $uniqueResidentsCollection;
     private $uniquePayersCollection;
 
+    /**
+     * NewBalanceRepo constructor.
+     */
     public function __construct(){
         $this->newBalanceCollection = new Collection();
         $this->uniqueFacilitiesCollection = new Collection();
@@ -18,6 +22,9 @@ Class NewBalanceRepo{
         $this->uniquePayersCollection = new Collection();
     }
 
+    /**
+     * @param ParsedFile $parsedFile
+     */
     public function parsedFileToObject($parsedFile){
         if($parsedFile->hasSeparateDOSColumn()){
             foreach($parsedFile->getIdentifiedColumnsArray() as $newBalanceInfo){
@@ -38,7 +45,7 @@ Class NewBalanceRepo{
                             if($key=='balance'.$index){
                                 $tmpNewBalanceInfo['balance']=$value;
                             }elseif(!strpos($key,'balance')){
-                                $tmpNewBalanceInfo[$key]==$value;
+                                $tmpNewBalanceInfo[$key]=$value;
                             }
                         }
                     }
@@ -49,8 +56,11 @@ Class NewBalanceRepo{
         }
     }
 
+    /**
+     * @param NewBalance $newBalance
+     */
     public function add($newBalance){
-        $uniqueFacilityIdentifier=$newBalance->getGroup().$newBalance->getUploadedFacilityName();
+        $uniqueFacilityIdentifier=$newBalance->getGroup()->getName().$newBalance->getUploadedFacilityName();
         if(!$this->uniqueFacilitiesCollection->has($uniqueFacilityIdentifier)){
             $newBalance->setFacility();
             $this->uniqueFacilitiesCollection->put($uniqueFacilityIdentifier,$newBalance->getFacility());
@@ -74,22 +84,38 @@ Class NewBalanceRepo{
         $this->newBalanceCollection->push($newBalance);
     }
 
+    /**
+     * @return Collection
+     */
     public function getNewBalanceCollection(){
         return $this->newBalanceCollection;
     }
 
+    /**
+     * @return Collection
+     */
     public function getUniqueFacilitiesCollection(){
         return $this->uniqueFacilitiesCollection;
     }
 
+    /**
+     * @return Collection
+     */
     public function getUniqueResidentsCollection(){
         return $this->uniqueResidentsCollection;
     }
 
+    /**
+     * @return Collection
+     */
     public function getUniquePayersCollection(){
         return $this->uniquePayersCollection;
     }
 
+    /**
+     * @param $uniqueResidentsCollection
+     * @return mixed
+     */
     public function setUniqueResidentsCollection($uniqueResidentsCollection){
         return $this->uniqueResidentsCollection=$uniqueResidentsCollection;
     }

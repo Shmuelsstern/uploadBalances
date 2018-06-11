@@ -17,6 +17,13 @@ class GroupRepo
 {
     private $collection;
     const SUBJECT = "group";
+    const QB_GROUP_RECORD_ID = 'record ID#';
+    const QB_GROUP_NAME = 'Name';
+    const QB_GROUP_COLLECTIONS_CHECKBOX = 'collections';
+    const QB_GROUP_RECORD_ID_FIELD = 3;
+    const QB_GROUP_NAME_FIELD = 6;
+    const QB_GROUP_COLLECTIONS_CHECKBOX_FIELD = 24;
+
 
     /**
      * GroupRepo constructor.
@@ -43,7 +50,8 @@ class GroupRepo
      */
     public function populateCollection(QuickbaseRequester $QBR)
     {
-        $QBR->setSubject(self::SUBJECT)->setAction('API_DoQuery')->getRequestBuilder()->setQuery('collections','equals','TRUE')->setReturnList(['record ID#','Name'])->buildDoQuery();
+        $QBR->setSubject(self::SUBJECT)->setAction('API_DoQuery')->getRequestBuilder()->setQuery
+        (self::QB_GROUP_COLLECTIONS_CHECKBOX_FIELD,'equals','TRUE')->setReturnList([self::QB_GROUP_RECORD_ID_FIELD,self::QB_GROUP_NAME_FIELD])->buildRequest();
         try {
             $results = $QBR->setXMLRequest()->requestXML();
         } catch (\Throwable $e) {
